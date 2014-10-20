@@ -6,8 +6,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class FlightDemo extends JPanel implements MouseListener{
-    ArrayList<Plane> stuff = new ArrayList<Plane>();
-    ArrayList<Spawner> lifes = new ArrayList<Spawner>();
+    ArrayList<Unit> objects = new ArrayList<Unit>();
     ArrayList<Laser> lasers = new ArrayList<Laser>();
 
 
@@ -18,42 +17,27 @@ public class FlightDemo extends JPanel implements MouseListener{
         setVisible(true);
         setDoubleBuffered(true);
         addMouseListener(this);
-        stuff.add(new Plane(100,100,10,0,2,lasers));
-        lifes.add(new Spawner(400,400,3,stuff,lasers,2));
+        objects.add(new TTTSpawner(400, 400, 2, objects, lasers));
 
     }
     public void update(){
-        for(int x=0;x<lifes.size();x++){
-            lifes.get(x).update();
+        for(int x=0;x<objects.size();x++){
+            objects.get(x).update();
+        }
+        for(int x=0;x<lasers.size();x++){
+            lasers.get(x).update();
         }
 
-        for(int x=0;x<stuff.size();x++){
-            stuff.get(x).ai(stuff);
-            stuff.get(x).update();
-
-        }
-
-        for (Iterator<Plane> iterator = stuff.iterator(); iterator.hasNext(); ) {
-            Plane b = iterator.next();
+        for (Iterator<Unit> iterator = objects.iterator(); iterator.hasNext(); ) {
+            Unit b = iterator.next();
             if(!b.alive)
                 iterator.remove();
         }
-        for (Iterator<Spawner> iterator = lifes.iterator(); iterator.hasNext(); ) {
-            Spawner b = iterator.next();
-            if(!b.alive)
-                iterator.remove();
-        }
-
-
-
     }
     public void paintComponent(Graphics g){
         super.paintComponent(g);
-        for(int x=0;x<lifes.size();x++){
-            lifes.get(x).draw(g);
-        }
-        for(int x=0;x<stuff.size();x++){
-            stuff.get(x).draw(g);
+        for(int x=0;x<objects.size();x++){
+            objects.get(x).draw(g);
         }
         for(int x=0;x<lasers.size();x++){
             lasers.get(x).draw(g);
@@ -65,7 +49,7 @@ public class FlightDemo extends JPanel implements MouseListener{
 
 
     public void mouseClicked(MouseEvent e) {
-        lifes.add(new Spawner(e.getX(),e.getY(),5,stuff,lasers,1));
+        objects.add(new TTTSpawner(e.getX(),e.getY(),1,objects,lasers));
     }
 
     public void mousePressed(MouseEvent e) {
