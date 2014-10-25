@@ -111,7 +111,7 @@ public class Plane {
             if (a.get(q) == this)
                 continue;
             if(collisionCircle(x,y,400,a.get(q).getX(),a.get(q).getY(),20)>0&&a.get(q).kind!=kind&&(System.nanoTime()-lastShotFire)/1000000000.0>rateOfFire){
-                lasers.add(new Laser(x,y,a.get(q).getX(),a.get(q).getY(),kind));
+                lasers.add(new Laser(x,y,a.get(q).getX(),a.get(q).getY(),kind,1));
                 lastShotFire=System.nanoTime();
             }
         }

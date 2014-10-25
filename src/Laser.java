@@ -2,18 +2,20 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class Laser{
-    private double x;
-    private double y;
-    private double deltax;
-    private double deltay;
-    final private static int size = 4;
-    final private static double speed = 20;
-    private boolean alive;
+     double x;
+     double y;
+     double w=2;
+     double h=2;
+     double deltax;
+     double deltay;
+     static int size = 4;
+     static double speed = 15;
+    boolean alive;
     int kind;
-    int damage=10;
+    int damage;
     ArrayList<Point> trail = new ArrayList<Point>();
 
-    public Laser(double x,double y,double x2,double y2,int kind){
+    public Laser(double x,double y,double x2,double y2,int kind, int damage){
         this.x=x;
         this.y=y;
         double slope = (y-y2)/(x-x2);
@@ -24,6 +26,7 @@ public class Laser{
         deltay=deltay/distance;
         alive=true;
         this.kind=kind;
+        this.damage=damage;
     }
 
     public void draw(Graphics g){

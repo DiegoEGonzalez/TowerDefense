@@ -2,20 +2,18 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class TTT extends Unit {
-    double vx=0;
-    double vy=0;
-    double power=10;
+    double power=5;
     double angle=90;
     boolean left,right,down,up;
+
+
     public TTT(int x, int y, int kind, ArrayList<Unit> objects, ArrayList<Laser> lasers){
-        super(x,y,30,30,objects,lasers);
+        super(x,y,30,30,kind,50,objects,lasers);
         recharge=1;
         lastAction=System.nanoTime();
-        maxhealth=30;
-        health=maxhealth;
-        this.kind=kind;
         alive=true;
     }
+
     public void move(){
         if(angle<0)
             angle=Math.toRadians(360)+angle;
@@ -39,16 +37,31 @@ public class TTT extends Unit {
         }
 
     }
+
     public void action(){
+        if(priority==1)
+            shootClosest();
+
+    }
+
+    public void shootClosest(){
+        int indexOfClosest=-1;
         for(int q=0;q<objects.size();q++) {
             if (objects.get(q) == this||objects.get(q).kind==kind)
                 continue;
             if(collisionCircle(x,y,400,objects.get(q).x,objects.get(q).y,20)>0) {
-                lasers.add(new Laser(x, y, objects.get(q).x, objects.get(q).y, kind));
-                break;
+                int distance1 = (int)Math.sqrt(Math.pow(x-objects.get(q).x,2)+Math.pow(y-objects.get(q).y,2));
+                if(indexOfClosest==-1)
+                    indexOfClosest=q;
+                else if(distance1<((int)Math.sqrt(Math.pow(x-objects.get(indexOfClosest).x,2)+Math.pow(y-objects.get(indexOfClosest).y,2))))
+                    indexOfClosest=q;
+
             }
         }
+        if(indexOfClosest!=-1)
+            lasers.add(new Laser(x, y, objects.get(indexOfClosest).x, objects.get(indexOfClosest).y, kind,10));
     }
+
     public void draw(Graphics g){
         Graphics2D a = (Graphics2D)g;
         a.translate(x,y);
@@ -66,9 +79,6 @@ public class TTT extends Unit {
         a.rotate(angle);
         a.translate(-x,-y);
 
-        g.setColor(Color.WHITE);
-        g.drawRect(x,y+30,30,5);
-        g.fillRect(x,y+30,(int)((30.0/maxhealth)*health),5);
 
     }
 }
