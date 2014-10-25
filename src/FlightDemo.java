@@ -9,8 +9,9 @@ import java.util.Iterator;
 public class FlightDemo extends JPanel implements MouseListener,MouseWheelListener, MouseMotionListener{
     ArrayList<Unit> objects = new ArrayList<Unit>();
     ArrayList<Laser> lasers = new ArrayList<Laser>();
+    static int mapsize=3000;
     double marginX = 200;
-    double scaler =1;
+    double scaler =1.0/(mapsize/(Shell.DEFAULT_WINDOWSIZEX-200));
     int startx=0;
     int offsetx=0;
     int starty=0;
@@ -18,7 +19,7 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
     int currentx=0;
     int currenty=0;
     int selection =0;
-    static int mapsize=3000;
+
 
 
 
