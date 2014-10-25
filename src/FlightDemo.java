@@ -18,7 +18,7 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
     int currentx=0;
     int currenty=0;
     int selection =0;
-    static int mapsize=5000;
+    static int mapsize=3000;
 
 
 
@@ -117,7 +117,7 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
                 selection = 2;
             else if (collision(e.getX(), e.getY(), 0, 275, 200, 50))
                 selection = 3;
-        } else {
+        } else if (e.getX()>225){
             switch (selection){
                 case 1:
                     objects.add(new TTTSpawner((int)((e.getX()-marginX-offsetx-currentx)/scaler),(int)((e.getY()-offsety-currenty)/scaler),1,objects,lasers));
