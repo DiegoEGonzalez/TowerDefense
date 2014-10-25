@@ -12,7 +12,7 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
     static int mapsize=3000;
     static int mapsizey=1800;
     double marginX = 200;
-    double scaler =1.0/(mapsize/(Shell.DEFAULT_WINDOWSIZEX-200));
+    double scaler =1.0/((double)mapsize/(Shell.DEFAULT_WINDOWSIZEX-200));
     int startx=0;
     int offsetx=0;
     int starty=0;
