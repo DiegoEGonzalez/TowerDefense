@@ -1,9 +1,6 @@
 import java.awt.*;
 import java.util.ArrayList;
 
-/**
- * Created by DiegoGonzalez on 10/23/14.
- */
 public class BASE extends Unit {
 
     public BASE(int x, int y, int kind, ArrayList<Unit> objects, ArrayList<Laser> lasers){

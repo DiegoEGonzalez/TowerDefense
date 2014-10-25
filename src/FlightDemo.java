@@ -10,6 +10,7 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
     ArrayList<Unit> objects = new ArrayList<Unit>();
     ArrayList<Laser> lasers = new ArrayList<Laser>();
     static int mapsize=3000;
+    static int mapsizey=1800;
     double marginX = 200;
     double scaler =1.0/(mapsize/(Shell.DEFAULT_WINDOWSIZEX-200));
     int startx=0;
@@ -32,7 +33,7 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
         addMouseListener(this);
         addMouseWheelListener(this);
         addMouseMotionListener(this);
-        objects.add(new BASE(50,400,1,objects,lasers));
+        objects.add(new BASE(50, mapsizey / 2 - 50, 1, objects, lasers));
         objects.add(new TTTSpawner(2000, 900, 2, objects, lasers));
         objects.add(new TTTSpawner(2000, 800, 2, objects, lasers));
         objects.add(new SSSSpawner(2000, 400, 2, objects, lasers));
@@ -42,6 +43,9 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
 
     }
     public void update(){
+
+
+
         for(int x=0;x<objects.size();x++){
             objects.get(x).update();
         }
@@ -112,7 +116,7 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
 
 
     public void mouseClicked(MouseEvent e) {
-        if(selection==0) {
+        if(selection==0 || (selection>0 && e.getX()<200)) {
             if (collision(e.getX(), e.getY(), 0, 175, 200, 50))
                 selection = 1;
             else if (collision(e.getX(), e.getY(), 0, 225, 200, 50))
@@ -170,7 +174,7 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         int amount = e.getWheelRotation();
-        if(((Shell.DEFAULT_WINDOWSIZEX-200)/(scaler-(amount/100.0))<mapsize))
+        if((((Shell.DEFAULT_WINDOWSIZEX-200)/(scaler-(amount/100.0)))<mapsize))
         scaler -= amount / 100.0;
         System.out.println(mapsize/scaler+"");
     }
