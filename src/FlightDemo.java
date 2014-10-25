@@ -18,7 +18,7 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
     int currentx=0;
     int currenty=0;
     int selection =0;
-    int mapsize=5000;
+    static int mapsize=5000;
 
 
 
@@ -34,6 +34,8 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
         objects.add(new BASE(50,400,1,objects,lasers));
         objects.add(new TTTSpawner(1000, 400, 2, objects, lasers));
         objects.add(new TTTSpawner(1100, 400, 2, objects, lasers));
+        objects.add(new SSSSpawner(900, 400, 2, objects, lasers));
+        objects.add(new SSSSpawner(800, 400, 2, objects, lasers));
 
 
     }

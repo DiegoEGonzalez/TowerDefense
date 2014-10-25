@@ -24,9 +24,9 @@ public class SSS extends Unit {
         vx=(Math.cos(-angle)*power);
         x+=Math.round(vx);
         y+=Math.round(vy);
-        left = x+vx>Shell.DEFAULT_WINDOWSIZEX-50;
+        left = x+vx>FlightDemo.mapsize-50;
         right = x+vx<50;
-        up = y+vy>Shell.DEFAULT_WINDOWSIZEY-50;
+        up = y+vy>FlightDemo.mapsize-50;
         down = y+vy<50;
         if(left||right||up||down)
             angle+=Math.toRadians(2)*power;
