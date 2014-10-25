@@ -37,6 +37,7 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
         objects.add(new TTTSpawner(2000, 800, 2, objects, lasers));
         objects.add(new SSSSpawner(2000, 400, 2, objects, lasers));
         objects.add(new SSSSpawner(2000, 1100, 2, objects, lasers));
+        objects.add(new TTTSpawner(2000, 500, 2, objects, lasers));
 
 
     }
