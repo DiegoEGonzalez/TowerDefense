@@ -126,6 +126,7 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
                     selection=0;
                     break;
                 case 3:
+                    objects.add(new WWWSpawner((int)((e.getX()-marginX-offsetx-currentx)/scaler),(int)((e.getY()-offsety-currenty)/scaler),1,objects,lasers));
                     selection=0;
                     break;
             }
@@ -177,7 +178,7 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
         //// **** IMPORTANT NOTE ***** remember that shifting it to the left is negative and right is positive
 
         int tempoffsetX=e.getX()-startx;
-        if((mapsize+200-(Shell.DEFAULT_WINDOWSIZEX+tempoffsetX+offsetx)/scaler>=0)&&(tempoffsetX+offsetx<0))
+        if((mapsize+(200-Shell.DEFAULT_WINDOWSIZEX+tempoffsetX+offsetx)/scaler>=0)&&(tempoffsetX+offsetx<0))
         offsetx+=tempoffsetX;
 
         System.out.println(offsetx+" "+currentx+" "+(e.getX()-startx));
