@@ -4,7 +4,7 @@ import java.util.ArrayList;
 public class TTTSpawner extends Unit{
     public TTTSpawner(int x, int y, int kind, ArrayList<Unit> objects, ArrayList<Laser> lasers){
         super(x,y,50,50,kind,150,objects,lasers);
-        recharge=6;
+        recharge=10;
         lastAction=System.nanoTime();
         alive=true;
     }
@@ -12,7 +12,7 @@ public class TTTSpawner extends Unit{
 
     }
     public void action(){
-        objects.add(new TTT(x,y,kind,objects,lasers));
+            objects.add(new TTT(x, y, kind, objects, lasers));
     }
     public void draw(Graphics g){
         super.draw(g);

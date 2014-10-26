@@ -11,7 +11,7 @@ import java.util.ArrayList;
     public class WWWSpawner extends Unit{
         public WWWSpawner(int x, int y, int kind, ArrayList<Unit> objects, ArrayList<Laser> lasers){
             super(x,y,50,50,kind,85,objects,lasers);
-            recharge=10;
+            recharge=12;
             lastAction=System.nanoTime();
             alive=true;
         }

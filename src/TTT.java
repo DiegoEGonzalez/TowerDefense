@@ -1,65 +1,17 @@
 import java.awt.*;
 import java.util.ArrayList;
 
-public class TTT extends Unit {
-    double power=5;
-    double angle=90;
+public class TTT extends Minions {
     boolean left,right,down,up;
 
 
     public TTT(int x, int y, int kind, ArrayList<Unit> objects, ArrayList<Laser> lasers){
-        super(x,y,30,30,kind,50,objects,lasers);
+        super(x,y,30,30,kind,30,4,7,objects,lasers);
         recharge=1;
         lastAction=System.nanoTime();
         alive=true;
-    }
-
-    public void move(){
-        if(angle<0)
-            angle=Math.toRadians(360)+angle;
-        angle=angle%Math.toRadians(360);
-        vy=(Math.sin(-angle)*power);
-        vx=(Math.cos(-angle)*power);
-        x+=Math.round(vx);
-        y+=Math.round(vy);
-        left = x+vx>FlightDemo.mapsize-50;
-        right = x+vx<50;
-        up = y+vy>FlightDemo.mapsize-50;
-        down = y+vy<50;
-        if(left||right||up||down)
-            angle+=Math.toRadians(2)*power;
-        else {
-            if (Math.random() < .5) {
-                angle += Math.toRadians(1 * power);
-            } else {
-                angle -= Math.toRadians(1 * power);
-            }
-        }
-
-    }
-
-    public void action(){
-        if(priority==1)
-            shootClosest();
-
-    }
-
-    public void shootClosest(){
-        int indexOfClosest=-1;
-        for(int q=0;q<objects.size();q++) {
-            if (objects.get(q) == this||objects.get(q).kind==kind)
-                continue;
-            if(collisionCircle(x,y,400,objects.get(q).x,objects.get(q).y,20)>0) {
-                int distance1 = (int)Math.sqrt(Math.pow(x-objects.get(q).x,2)+Math.pow(y-objects.get(q).y,2));
-                if(indexOfClosest==-1)
-                    indexOfClosest=q;
-                else if(distance1<((int)Math.sqrt(Math.pow(x-objects.get(indexOfClosest).x,2)+Math.pow(y-objects.get(indexOfClosest).y,2))))
-                    indexOfClosest=q;
-
-            }
-        }
-        if(indexOfClosest!=-1)
-            lasers.add(new Laser(x, y, objects.get(indexOfClosest).x, objects.get(indexOfClosest).y, kind,10));
+        priority=1;
+        hate=2;
     }
 
     public void draw(Graphics g){
@@ -79,6 +31,15 @@ public class TTT extends Unit {
         a.rotate(angle);
         a.translate(-x,-y);
 
+        /**
+        double a2 = Math.atan2((double)-(objects.get(1).y-y),(double)(objects.get(1).x-x));
+        a2=(a2 %= Math.toRadians(360)) >= 0 ? a2 : (a2 + Math.toRadians(360));
+        a.translate(x,y);
+        a.rotate(-a2);
+        g.drawLine(0,0,100,0);
+        a.rotate(a2);
+        a.translate(-x,-y);
+         **/
 
     }
 }

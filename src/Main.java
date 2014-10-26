@@ -1,35 +1,41 @@
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class Main {
+public class Main implements ActionListener{
 
     static Shell window;
+    static FlightDemo game;
+    static Timer timer;
 
     public static void main(String[] args) {
         window = new Shell();//Creates a JFrame using GameEngine
-        final FlightDemo game = new FlightDemo();//Creates the Game
+        game = new FlightDemo();//Creates the Game
         window.add(game);//adds the Game to the JFrame
         //*********** JFRAME SPECIFICS **************
         window.setVisible(true); //makes the JFrame visible
+        Main confusing = new Main();
+        //while (true) {
+            //game.repaint();//repaint the Game
+            //java.awt.EventQueue.invokeLater(new Runnable() {
+              //  public void run() {
+                    //game.update();
+                //}
+            //});
 
-        Runnable r1 = new Runnable() {
-            public void run() { //Sets an operation for a thread to do, currently used for the actual game application
-                try {
-                    while (true) {
-                        game.repaint();//repaint the Game
-                        java.awt.EventQueue.invokeLater(new Runnable() {
-                            public void run() {
-                                game.update();
-                            }
-                        });
 
-                        //game.update();//update the Game
-                        Thread.sleep(35); //sleeps the thread, makes it wait, 35 milliseconds
-                    }
-                } catch (InterruptedException iex) {}
-            }
-        };
-        Thread thr1 = new Thread(r1); //Creates a thread with runnable r1
-        thr1.start(); //starts the first thread
+       // }
+    }
 
+    public Main(){
+        timer=new Timer(35,this);
+        timer.setInitialDelay(100);
+        timer.start();
+    }
+
+    public void actionPerformed(ActionEvent e){
+        game.repaint();
+        game.update();
 
     }
 }

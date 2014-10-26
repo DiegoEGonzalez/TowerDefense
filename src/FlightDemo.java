@@ -9,8 +9,7 @@ import java.util.Iterator;
 public class FlightDemo extends JPanel implements MouseListener,MouseWheelListener, MouseMotionListener{
     ArrayList<Unit> objects = new ArrayList<Unit>();
     ArrayList<Laser> lasers = new ArrayList<Laser>();
-    static int mapsize=3000;
-    static int mapsizey=1800;
+    static int mapsize=1500;
     double marginX = 200;
     double scaler =1.0/((double)mapsize/(Shell.DEFAULT_WINDOWSIZEX-200));
     int startx=0;
@@ -20,6 +19,8 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
     int currentx=0;
     int currenty=0;
     int selection =0;
+    long lastAction=System.nanoTime();
+    int level=1;
 
 
 
@@ -33,17 +34,18 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
         addMouseListener(this);
         addMouseWheelListener(this);
         addMouseMotionListener(this);
-        objects.add(new BASE(50, mapsizey / 2 - 50, 1, objects, lasers));
-        objects.add(new TTTSpawner(2000, 900, 2, objects, lasers));
-        objects.add(new TTTSpawner(2000, 800, 2, objects, lasers));
-        objects.add(new SSSSpawner(2000, 400, 2, objects, lasers));
-        objects.add(new SSSSpawner(2000, 1100, 2, objects, lasers));
-        objects.add(new TTTSpawner(2000, 500, 2, objects, lasers));
-
+        objects.add(new BASE(50, mapsize / 2 - 50, 1, objects, lasers));
+        //objects.add(new BASE(mapsize-50,mapsize/2-50,2,objects,lasers));
 
     }
     public void update(){
-
+        if((System.nanoTime()-lastAction)/1000000000.0>20){
+            for(int x=0;x<5*level;x++){
+                objects.add(new TTT(mapsize-30,(int)(Math.random()*mapsize),2,objects,lasers));
+            }
+            lastAction=System.nanoTime();
+            level++;
+        }
 
 
         for(int x=0;x<objects.size();x++){
@@ -73,7 +75,6 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
             lasers.get(x).draw(g);
         }
         g.setColor(Color.white);
-        g.drawRect(0,Shell.DEFAULT_WINDOWSIZEY-50,Shell.DEFAULT_WINDOWSIZEX,Shell.DEFAULT_WINDOWSIZEY);
         g.drawRect(0,0,mapsize,mapsize);
 
         a.scale(1/scaler,1/scaler);
@@ -101,6 +102,8 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
 
 
     }
+
+
 
     public boolean collision(int x, int y, int a, int b, int w, int h){
         boolean up=(y-b)<h;
@@ -140,27 +143,20 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
             }
         }
 
-
-
-        //objects.add(new SSSSpawner(e.getX()-(int)marginX,e.getY(),1,objects,lasers));
     }
 
     public void mousePressed(MouseEvent e) {
-
-                startx=e.getX();
-                starty=e.getY();
+                if(selection==0) {
+                    startx = e.getX();
+                    starty = e.getY();
+                }
 
 
 
     }
 
     public void mouseReleased(MouseEvent e) {
-              //  currentx+=offsetx;
-            //    currenty+=offsety;
-          //      offsety=0;
-        //offsetx=0;
-        //startx=0;
-        //starty=0;
+
     }
 
     public void mouseEntered(MouseEvent e) {
@@ -174,8 +170,10 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         int amount = e.getWheelRotation();
-        if((((Shell.DEFAULT_WINDOWSIZEX-200)/(scaler-(amount/100.0)))<mapsize))
-        scaler -= amount / 100.0;
+        if((((Shell.DEFAULT_WINDOWSIZEX-200)/(scaler-(amount/100.0)))<mapsize)) {
+            scaler -= amount / 100.0;
+
+        }
         System.out.println(mapsize/scaler+"");
     }
 
@@ -184,19 +182,20 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
 
 
         //// **** IMPORTANT NOTE ***** remember that shifting it to the left is negative and right is positive
+        if(selection==0) {
+            int tempoffsetX = e.getX() - startx;
+            if ((mapsize + (200 - Shell.DEFAULT_WINDOWSIZEX + tempoffsetX + offsetx) / scaler >= 0) && (tempoffsetX + offsetx < 0))
+                offsetx += tempoffsetX;
 
-        int tempoffsetX=e.getX()-startx;
-        if((mapsize+(200-Shell.DEFAULT_WINDOWSIZEX+tempoffsetX+offsetx)/scaler>=0)&&(tempoffsetX+offsetx<0))
-        offsetx+=tempoffsetX;
+            System.out.println(offsetx + " " + currentx + " " + (e.getX() - startx));
+            int tempoffsetY = e.getY() - starty;
+            if ((mapsize - ((Shell.DEFAULT_WINDOWSIZEY + tempoffsetY + offsety) / scaler) >= 0) && (tempoffsetY + offsety < 0))
+                offsety += e.getY() - starty;
+            System.out.println(mapsize - ((Shell.DEFAULT_WINDOWSIZEY + tempoffsetY + offsety) / scaler));
 
-        System.out.println(offsetx+" "+currentx+" "+(e.getX()-startx));
-        int tempoffsetY=e.getY()-starty;
-        if((mapsize-((Shell.DEFAULT_WINDOWSIZEY+tempoffsetY+offsety)/scaler)>=0)&&(tempoffsetY+offsety<0))
-        offsety+=e.getY()-starty;
-        System.out.println(mapsize-((Shell.DEFAULT_WINDOWSIZEY+tempoffsetY+offsety)/scaler));
-
-        startx=e.getX();
-        starty=e.getY();
+            startx = e.getX();
+            starty = e.getY();
+        }
 
     }
 

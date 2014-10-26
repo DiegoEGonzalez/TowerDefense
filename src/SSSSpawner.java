@@ -4,7 +4,7 @@ import java.util.ArrayList;
 public class SSSSpawner extends Unit{
     public SSSSpawner(int x, int y, int kind, ArrayList<Unit> objects, ArrayList<Laser> lasers){
         super(x,y,50,50,kind,150,objects,lasers);
-        recharge=6;
+        recharge=8;
         lastAction=System.nanoTime();
         alive=true;
     }
