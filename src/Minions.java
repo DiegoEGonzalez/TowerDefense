@@ -8,6 +8,7 @@ public class Minions extends Unit{
     int hate =3;
     int damage;
     boolean offensive=false;
+    int bulletLife=100;
 
 
     public Minions(int x, int y,int w, int h, int kind, int health, double power,int damage,ArrayList<Unit> objects, ArrayList<Laser> lasers){
@@ -113,15 +114,16 @@ public class Minions extends Unit{
                 continue;
             if(collisionCircle(x,y,400,objects.get(q).x,objects.get(q).y,20)>0) {
                 int distance1 = (int)Math.sqrt(Math.pow(x-objects.get(q).x,2)+Math.pow(y-objects.get(q).y,2));
-                if(indexOfClosest==-1)
-                    indexOfClosest=q;
-                else if(distance1<((int)Math.sqrt(Math.pow(x-objects.get(indexOfClosest).x,2)+Math.pow(y-objects.get(indexOfClosest).y,2))))
-                    indexOfClosest=q;
+                if(indexOfClosest==-1) {
+                    indexOfClosest = q;
+                } else if(distance1<((int)Math.sqrt(Math.pow(x-objects.get(indexOfClosest).x,2)+Math.pow(y-objects.get(indexOfClosest).y,2)))) {
+                    indexOfClosest = q;
+                }
 
             }
         }
         if(indexOfClosest!=-1)
-            lasers.add(new Laser(x, y, objects.get(indexOfClosest).x, objects.get(indexOfClosest).y, kind,damage));
+            lasers.add(new Laser(x, y, objects.get(indexOfClosest).x, objects.get(indexOfClosest).y, kind,damage,bulletLife));
     }
     public void shootFarthest(){
         int indexOfClosest=-1;
@@ -138,7 +140,7 @@ public class Minions extends Unit{
             }
         }
         if(indexOfClosest!=-1)
-            lasers.add(new Laser(x, y, objects.get(indexOfClosest).x, objects.get(indexOfClosest).y, kind,damage));
+            lasers.add(new Laser(x, y, objects.get(indexOfClosest).x, objects.get(indexOfClosest).y, kind,damage,bulletLife));
     }
     public void shootWeakest(){
         int indexOf=-1;
@@ -154,11 +156,11 @@ public class Minions extends Unit{
             }
         }
         if(indexOf!=-1)
-            lasers.add(new Laser(x, y, objects.get(indexOf).x, objects.get(indexOf).y, kind,damage));
+            lasers.add(new Laser(x, y, objects.get(indexOf).x, objects.get(indexOf).y, kind,damage,bulletLife));
     }
     public void shootThreat(){
         int indexOfClosest=-1;
-        for(int q=1;q<objects.size();q++) {
+        for(int q=0;q<objects.size();q++) {
             if (objects.get(q) == this||objects.get(q).kind==kind)
                 continue;
             if(collisionCircle(x,y,400,objects.get(q).x,objects.get(q).y,20)>0) {
@@ -171,7 +173,7 @@ public class Minions extends Unit{
             }
         }
         if(indexOfClosest!=-1)
-            lasers.add(new Laser(x, y, objects.get(indexOfClosest).x, objects.get(indexOfClosest).y, kind,damage));
+            lasers.add(new Laser(x, y, objects.get(indexOfClosest).x, objects.get(indexOfClosest).y, kind,damage,bulletLife));
     }
     public int findTarget(int thing){
         int indexOfClosest=-1;

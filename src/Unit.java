@@ -39,8 +39,8 @@ public abstract class Unit{
             Laser b = iterator.next();
 
             if(collisionCircle(x,y,h/2+h/4,(int)b.getX(),(int)b.getY(),2)!=0&&b.kind!=kind){
-                health-=b.damage;
-                iterator.remove();
+                health-=b.getDamage();
+                b.kill();
             }
 
         }

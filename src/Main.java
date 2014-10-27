@@ -7,6 +7,7 @@ public class Main implements ActionListener{
     static Shell window;
     static FlightDemo game;
     static Timer timer;
+    static boolean ready=false;
 
     public static void main(String[] args) {
         window = new Shell();//Creates a JFrame using GameEngine
@@ -16,15 +17,15 @@ public class Main implements ActionListener{
         window.setVisible(true); //makes the JFrame visible
         Main confusing = new Main();
         //while (true) {
-            //game.repaint();//repaint the Game
-            //java.awt.EventQueue.invokeLater(new Runnable() {
-              //  public void run() {
-                    //game.update();
-                //}
-            //});
+        //game.repaint();//repaint the Game
+        //java.awt.EventQueue.invokeLater(new Runnable() {
+        //  public void run() {
+        //game.update();
+        //}
+        //});
 
 
-       // }
+        // }
     }
 
     public Main(){

@@ -12,6 +12,7 @@ public class SSS extends Minions {
         this.kind=kind;
         alive=true;
         priority=4;
+        offensive=true;
     }
 
     public void move2(){
@@ -19,7 +20,7 @@ public class SSS extends Minions {
     }
 
     public void draw(Graphics g){
-        super.draw(g);
+        //super.draw(g);
         Graphics2D a = (Graphics2D)g;
         a.translate(x,y);
         a.rotate(-angle);

@@ -13,11 +13,12 @@ public class WWW extends Minions {
         recharge=.75;
         priority=1;
         hate=1;
+        bulletLife=15;
     }
 
 
     public void draw(Graphics g){
-        super.draw(g);
+        //super.draw(g);
         Graphics2D a = (Graphics2D)g;
         a.translate(x,y);
         a.rotate(-angle);

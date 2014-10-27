@@ -10,12 +10,14 @@ public class Laser{
      double deltay;
      static int size = 4;
      static double speed = 15;
-    boolean alive;
+    private boolean alive;
     int kind;
     int damage;
+    int life;
     ArrayList<Point> trail = new ArrayList<Point>();
 
-    public Laser(double x,double y,double x2,double y2,int kind, int damage){
+
+    public Laser(double x,double y,double x2,double y2,int kind, int damage, int life){
         this.x=x;
         this.y=y;
         double slope = (y-y2)/(x-x2);
@@ -27,6 +29,8 @@ public class Laser{
         alive=true;
         this.kind=kind;
         this.damage=damage;
+        this.life=life;
+        trail.add(new Point((int)x,(int)y));
     }
 
     public void draw(Graphics g){
@@ -35,21 +39,23 @@ public class Laser{
         else
             g.setColor(Color.RED);
 
-        trail.add(new Point((int)x,(int)y));
-        if(trail.size()>3)
-            trail.remove(0);
-        if(trail.size()>1)
-                g.drawLine((int)trail.get(0).getX(),(int)trail.get(0).getY(),(int)trail.get(trail.size()-1).getX(),(int)trail.get(trail.size()-1).getY());
+        g.drawLine((int)x,(int)y,(int)(x-deltax*10),(int)(y-deltay*10));
+
+
     }
     public void update(){
         move();
+        life--;
+        trail.add(new Point((int)x,(int)y));
+        if(trail.size()>3)
+            trail.remove(0);
     }
 
     public void move(){
         x+=deltax*speed;
         y+=deltay*speed;
 
-        if(x>Shell.DEFAULT_WINDOWSIZEX||x<-10||y>Shell.DEFAULT_WINDOWSIZEY||y<-10){
+        if(x>FlightDemo.mapsize||x<0||y>FlightDemo.mapsize||y<0){
             alive=false;
         }
     }
@@ -76,6 +82,17 @@ public class Laser{
 
     public boolean isAlive(){
         return alive;
+    }
+
+    public void hit(int a){
+        damage-=a;
+    }
+
+    public int getDamage(){
+        return damage;
+    }
+    public void kill(){
+        alive=false;
     }
 
 

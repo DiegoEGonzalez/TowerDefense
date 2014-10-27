@@ -11,10 +11,12 @@ public class TTT extends Minions {
         lastAction=System.nanoTime();
         alive=true;
         priority=1;
-        hate=2;
+        hate=3;
+        offensive=true;
     }
 
     public void draw(Graphics g){
+        //super.draw(g);
         Graphics2D a = (Graphics2D)g;
         a.translate(x,y);
         a.rotate(-angle);
