@@ -8,12 +8,13 @@ public class WWW extends Minions {
     boolean left,right,down,up;
 
     public WWW(int x, int y, int kind, ArrayList<Unit> objects, ArrayList<Laser> lasers){
-        super(x,y,30,30,kind,150,2,50,objects,lasers);
+        super(x,y,30,30,kind,100,2,50,objects,lasers);
         alive=true;
         recharge=.75;
-        priority=1;
+        priority=2;
         hate=1;
         bulletLife=15;
+        shotpower=25;
     }
 
 

@@ -6,17 +6,17 @@ public class TTT extends Minions {
 
 
     public TTT(int x, int y, int kind, ArrayList<Unit> objects, ArrayList<Laser> lasers){
-        super(x,y,30,30,kind,30,4,7,objects,lasers);
+        super(x,y,30,30,kind,10,4,5,objects,lasers);
         recharge=1;
         lastAction=System.nanoTime();
         alive=true;
         priority=1;
         hate=3;
-        offensive=true;
+        offensive=User.strategyTTT;
     }
 
     public void draw(Graphics g){
-        //super.draw(g);
+        super.draw(g);
         Graphics2D a = (Graphics2D)g;
         a.translate(x,y);
         a.rotate(-angle);
@@ -34,14 +34,24 @@ public class TTT extends Minions {
         a.translate(-x,-y);
 
         /**
-        double a2 = Math.atan2((double)-(objects.get(1).y-y),(double)(objects.get(1).x-x));
-        a2=(a2 %= Math.toRadians(360)) >= 0 ? a2 : (a2 + Math.toRadians(360));
-        a.translate(x,y);
-        a.rotate(-a2);
-        g.drawLine(0,0,100,0);
-        a.rotate(a2);
-        a.translate(-x,-y);
+         double a2 = Math.atan2((double)-(objects.get(1).y-y),(double)(objects.get(1).x-x));
+         a2=(a2 %= Math.toRadians(360)) >= 0 ? a2 : (a2 + Math.toRadians(360));
+         a.translate(x,y);
+         a.rotate(-a2);
+         g.drawLine(0,0,100,0);
+         a.rotate(a2);
+         a.translate(-x,-y);
          **/
+        a.translate(x,y);
+        a.rotate(-angle);
+        g.drawLine(0,0,100,0);
+        a.rotate(angle);
+        a.translate(-x,-y);
 
+    }
+
+    public int findTarget(int a){
+        offensive=User.strategyTTT;
+        return super.findTarget(a);
     }
 }

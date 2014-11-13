@@ -63,6 +63,9 @@ public abstract class Unit{
         g.drawRect(x-w/2,y+h/2+10,w,5);
         g.fillRect(x-w/2,y+h/2+10,(int)(((double)w/maxhealth)*health),5);
 
+        //Graphics2D a = (Graphics2D)g;
+
+
     }
 
     public double collisionCircle(int x1, int y1, int r1, int x2, int y2, int r2){

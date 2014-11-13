@@ -14,8 +14,8 @@ public class BASE extends Unit {
         g.drawRect(x-50,y-50,100,100);
         if(kind==1)
             g.setColor(Color.blue);
-                    else
-        g.setColor(Color.RED);
+        else
+            g.setColor(Color.RED);
 
         g.drawRect(x-35,y-35,70,70);
 

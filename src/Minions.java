@@ -2,6 +2,7 @@ import java.util.ArrayList;
 
 public class Minions extends Unit{
     double power;
+    double shotpower=10;
     double angle;
     boolean left,right,down,up;
     int target=0;
@@ -23,24 +24,36 @@ public class Minions extends Unit{
     public void move(){
         if(angle<0)
             angle=Math.toRadians(360)+angle;
+
         angle=angle%Math.toRadians(360);
+        avoidAsteroid();
+
         vy=(Math.sin(-angle)*power);
         vx=(Math.cos(-angle)*power);
-        x+=Math.round(vx);
-        y+=Math.round(vy);
+        //checks whether velocity will put it out of the map or out of the spawnarea.
+        left = ((x+vx>Alpha.mapsize)&&(x<Alpha.mapsize))||((x+vx>Alpha.mapsize+Alpha.mapsize/4+Alpha.mapsize/8)&&(x<Alpha.mapsize+Alpha.mapsize/4+Alpha.mapsize/8));
+        right = ((x+vx<0)&&(x>0));
+        up = ((y+vy>Alpha.mapsize/2)&&(y<Alpha.mapsize/2))||((y+vy>Alpha.mapsize/2+Alpha.mapsize/4)&&(y<Alpha.mapsize/2+Alpha.mapsize/4));
+        down = ((y+vy<-Alpha.mapsize/2)&&(y>-Alpha.mapsize/2))||((y+vy<-Alpha.mapsize/2-Alpha.mapsize/4)&&(y>-Alpha.mapsize/2-Alpha.mapsize/4));
 
-        left = x+vx>FlightDemo.mapsize-50;
-        right = x+vx<50;
-        up = y+vy>FlightDemo.mapsize-50;
-        down = y+vy<50;
+        if(clear()&&!(left||right||up||down)){
+            x+=Math.round(vx);
+            y+=Math.round(vy);
+        }
+
+
         if(left||right||up||down)
-            angle+=Math.toRadians(2)*power;
+            angle+=Math.toRadians(90);
         else {
             if(findTarget(hate)==-1) {
-                if(findTarget(1)==-1){
-                    wander();
-                } else {
+                if(User.targeti!=-1){
+                    seek(User.targeti);
+                } else if(User.targetX!=-1&&User.targetY!=-1){
+                    seek(User.targetX,User.targetY);
+                }else if(findTarget(1)!=-1){
                     seek(findTarget(1));
+                } else {
+                    //wander();
                 }
             } else {
                 seek(findTarget(hate));
@@ -66,9 +79,52 @@ public class Minions extends Unit{
             }
         }
     }
+    public void avoidAsteroid(){
+        for(int b=0;b<objects.size();b++){
+            if(objects.get(b).kind!=3)
+                continue;
+
+            double obstacle = collisionCircle((int)(x+vx),(int)(y+vy),h/2,(int)(objects.get(b).x),(int)(objects.get(b).y),(int)(objects.get(b).h/2));
+            if(obstacle!=0) {
+                if(obstacle>0)
+                    angle-=obstacle; //obstacle;//Math.toRadians(3)*power;
+                else
+                    angle+=obstacle; //obstacle;
+            }
+        }
+    }
+    public boolean clear(){
+        for(int b=0;b<objects.size();b++){
+            if(objects.get(b).kind!=3)
+                continue;
+
+            double obstacle = collisionCircle((int)(x+vx),(int)(y+vy),h/2,(int)(objects.get(b).x),(int)(objects.get(b).y),(int)(objects.get(b).h/2));
+            if(obstacle!=0) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     public void seek(int i){
         double a2 = Math.atan2((double)-(objects.get(i).y-y),(double)(objects.get(i).x-x));
+        a2=(a2 %= Math.toRadians(360)) >= 0 ? a2 : (a2 + Math.toRadians(360));
+
+        double dif = a2-angle;
+        if(dif>Math.toRadians(180))
+            dif-=Math.toRadians(360);
+        else if(dif<Math.toRadians(-180))
+            dif+=Math.toRadians(360);
+
+        if(dif<0)
+            angle-=Math.toRadians(.5)*power;
+        else
+            angle+=Math.toRadians(.5)*power;
+
+    }
+
+    public void seek(int i, int q){
+        double a2 = Math.atan2((double)-(q-y),(double)(i-x));
         a2=(a2 %= Math.toRadians(360)) >= 0 ? a2 : (a2 + Math.toRadians(360));
 
         double dif = a2-angle;
@@ -93,26 +149,28 @@ public class Minions extends Unit{
     }
 
     public void action() {
-        switch (priority){
-            case 1:
-                shootClosest();
-                break;
-            case 2:
-                shootFarthest();
-                break;
-            case 3:
-                shootWeakest();
-                break;
-            case 4:
-                shootThreat();
-        }
+        /**
+         switch (priority){
+         case 1:
+         shootClosest();
+         break;
+         case 2:
+         shootFarthest();
+         break;
+         case 3:
+         shootWeakest();
+         break;
+         case 4:
+         shootThreat();
+         }
+         **/
     }
     public void shootClosest(){
         int indexOfClosest=-1;
         for(int q=0;q<objects.size();q++) {
-            if (objects.get(q) == this||objects.get(q).kind==kind)
+            if (objects.get(q) == this||objects.get(q).kind==kind||objects.get(q).kind==3)
                 continue;
-            if(collisionCircle(x,y,400,objects.get(q).x,objects.get(q).y,20)>0) {
+            if(collisionCircle(x,y,400,objects.get(q).x,objects.get(q).y,20)!=0&&Math.abs(collisionCircle(x,y,400,objects.get(q).x,objects.get(q).y,20))<Math.toRadians(90)) {
                 int distance1 = (int)Math.sqrt(Math.pow(x-objects.get(q).x,2)+Math.pow(y-objects.get(q).y,2));
                 if(indexOfClosest==-1) {
                     indexOfClosest = q;
@@ -123,12 +181,12 @@ public class Minions extends Unit{
             }
         }
         if(indexOfClosest!=-1)
-            lasers.add(new Laser(x, y, objects.get(indexOfClosest).x, objects.get(indexOfClosest).y, kind,damage,bulletLife));
+            lasers.add(new Laser(x, y, objects.get(indexOfClosest).x, objects.get(indexOfClosest).y, kind,damage,shotpower, bulletLife));
     }
     public void shootFarthest(){
         int indexOfClosest=-1;
         for(int q=0;q<objects.size();q++) {
-            if (objects.get(q) == this||objects.get(q).kind==kind)
+            if (objects.get(q) == this||objects.get(q).kind==kind||objects.get(q).kind==3)
                 continue;
             if(collisionCircle(x,y,400,objects.get(q).x,objects.get(q).y,20)>0) {
                 int distance1 = (int)Math.sqrt(Math.pow(x-objects.get(q).x,2)+Math.pow(y-objects.get(q).y,2));
@@ -140,12 +198,12 @@ public class Minions extends Unit{
             }
         }
         if(indexOfClosest!=-1)
-            lasers.add(new Laser(x, y, objects.get(indexOfClosest).x, objects.get(indexOfClosest).y, kind,damage,bulletLife));
+            lasers.add(new Laser(x, y, objects.get(indexOfClosest).x, objects.get(indexOfClosest).y, kind,damage,shotpower, bulletLife));
     }
     public void shootWeakest(){
         int indexOf=-1;
         for(int q=0;q<objects.size();q++) {
-            if (objects.get(q) == this||objects.get(q).kind==kind)
+            if (objects.get(q) == this||objects.get(q).kind==kind||objects.get(q).kind==3)
                 continue;
             if(collisionCircle(x,y,400,objects.get(q).x,objects.get(q).y,20)>0) {
                 if(indexOf==-1)
@@ -156,14 +214,14 @@ public class Minions extends Unit{
             }
         }
         if(indexOf!=-1)
-            lasers.add(new Laser(x, y, objects.get(indexOf).x, objects.get(indexOf).y, kind,damage,bulletLife));
+            lasers.add(new Laser(x, y, objects.get(indexOf).x, objects.get(indexOf).y, kind,damage,shotpower, bulletLife));
     }
     public void shootThreat(){
         int indexOfClosest=-1;
         for(int q=0;q<objects.size();q++) {
-            if (objects.get(q) == this||objects.get(q).kind==kind)
+            if (objects.get(q) == this||objects.get(q).kind==kind||objects.get(q).kind==3)
                 continue;
-            if(collisionCircle(x,y,400,objects.get(q).x,objects.get(q).y,20)>0) {
+            if(collisionCircle(x,y,400,objects.get(q).x,objects.get(q).y,20)!=0&&Math.abs(collisionCircle(x,y,400,objects.get(q).x,objects.get(q).y,20))<Math.toRadians(90)) {
                 int distance1 = (int)Math.sqrt(Math.pow(objects.get(0).x-objects.get(q).x,2)+Math.pow(objects.get(0).y-objects.get(q).y,2));
                 if(indexOfClosest==-1)
                     indexOfClosest=q;
@@ -173,15 +231,15 @@ public class Minions extends Unit{
             }
         }
         if(indexOfClosest!=-1)
-            lasers.add(new Laser(x, y, objects.get(indexOfClosest).x, objects.get(indexOfClosest).y, kind,damage,bulletLife));
+            lasers.add(new Laser(x, y, objects.get(indexOfClosest).x, objects.get(indexOfClosest).y, kind,damage,shotpower, bulletLife));
     }
     public int findTarget(int thing){
         int indexOfClosest=-1;
         for(int q=0;q<objects.size();q++) {
             if (objects.get(q) == this)
                 continue;
-            if(offensive) {
-                if (objects.get(q).kind == kind)
+            if(offensive||kind==2) {
+                if (objects.get(q).kind == kind||objects.get(q).kind==3)
                     continue;
             }else {
                 if (objects.get(q).kind != kind)
@@ -207,7 +265,7 @@ public class Minions extends Unit{
 
 
 
-            if(collisionCircle(x,y,FlightDemo.mapsize,objects.get(q).x,objects.get(q).y,20)>0) {
+            if(collisionCircle(x,y,Alpha.mapsize*2,objects.get(q).x,objects.get(q).y,20)>0) {
                 int distance1 = (int)Math.sqrt(Math.pow(x-objects.get(q).x,2)+Math.pow(y-objects.get(q).y,2));
                 if(indexOfClosest==-1)
                     indexOfClosest=q;

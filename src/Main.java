@@ -5,13 +5,13 @@ import java.awt.event.ActionListener;
 public class Main implements ActionListener{
 
     static Shell window;
-    static FlightDemo game;
+    static Alpha game;
     static Timer timer;
     static boolean ready=false;
 
     public static void main(String[] args) {
         window = new Shell();//Creates a JFrame using GameEngine
-        game = new FlightDemo();//Creates the Game
+        game = new Alpha();//Creates the Game
         window.add(game);//adds the Game to the JFrame
         //*********** JFRAME SPECIFICS **************
         window.setVisible(true); //makes the JFrame visible
