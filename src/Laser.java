@@ -15,12 +15,12 @@ public class Laser{
     int damage;
     double speed=0;
     double maxspeed=0;
-    int life;
+    double life;
     double alpha=1.0;
     ArrayList<Point> trail = new ArrayList<Point>();
 
 
-    public Laser(double x,double y,double x2,double y2,int kind, int damage, double speed, int life){
+    public Laser(double x,double y,double x2,double y2,int kind, int damage, double speed, double life){
         this.x=x;
         this.y=y;
         double slope = (y-y2)/(x-x2);
@@ -41,8 +41,12 @@ public class Laser{
     public void draw(Graphics g){
         if(kind==1)
             g.setColor(new Color(0,255,255,(int)(alpha*255)));
+        else if(kind==2)
+            g.setColor(new Color(255,0,255,(int)(alpha*255)));
+        else if(kind==4)
+            g.setColor(new Color(0, 255, 0, (int) (alpha * 255)));
         else
-            g.setColor(new Color(255,0,0,(int)(alpha*255)));
+            g.setColor(new Color(204, 204, 255, (int) (alpha * 255)));
 
         g.drawLine((int)x,(int)y,(int)(x-deltax*10),(int)(y-deltay*10));
 

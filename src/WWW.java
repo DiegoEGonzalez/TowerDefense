@@ -7,38 +7,40 @@ import java.util.ArrayList;
 public class WWW extends Minions {
     boolean left,right,down,up;
 
-    public WWW(int x, int y, int kind, ArrayList<Unit> objects, ArrayList<Laser> lasers){
-        super(x,y,30,30,kind,100,2,50,objects,lasers);
+    public WWW(int x, int y, int kind, ArrayList<Unit> objects, ArrayList<Laser> lasers,Unit parent){
+        super(x,y,30,30,kind,100,2,50,objects,lasers,parent);
         alive=true;
-        recharge=.75;
+        recharge=2;
         priority=2;
         hate=1;
-        bulletLife=15;
-        shotpower=25;
+        bulletLife=30;
+        shotpower=100;
+        if(kind==1)
+            offensive=User.strategyWWW;
     }
 
 
-    public void draw(Graphics g){
+    public void draw(Graphics2D a){
         //super.draw(g);
-        Graphics2D a = (Graphics2D)g;
+        //Graphics2D a = (Graphics2D)g;
         a.translate(x,y);
         a.rotate(-angle);
 
         if(kind==1)
-            g.setColor(Color.BLUE);
+            a.setColor(Color.BLUE);
         else
-            g.setColor(Color.RED);
+            a.setColor(Color.RED);
 
-        g.drawLine(-15,-15,-15,15);
+        a.drawLine(-15, -15, -15, 15);
 
-        g.drawLine(-15,-15,0,-15);
-        g.drawLine(-15,15,0,15);
+        a.drawLine(-15, -15, 0, -15);
+        a.drawLine(-15, 15, 0, 15);
 
-        g.drawLine(0,-15,0,-10);
-        g.drawLine(0,15,0,10);
+        a.drawLine(0, -15, 0, -10);
+        a.drawLine(0, 15, 0, 10);
 
-        g.drawLine(0,10,15,0);
-        g.drawLine(0,-10,15,0);
+        a.drawLine(0, 10, 15, 0);
+        a.drawLine(0, -10, 15, 0);
 
         a.rotate(angle);
         a.translate(-x,-y);

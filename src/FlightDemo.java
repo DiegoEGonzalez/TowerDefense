@@ -48,7 +48,7 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
             mapsize+=100*level;
             scaler =1.0/((double)mapsize/(Shell.DEFAULT_WINDOWSIZEX-200));
             for(int x=0;x<5*level;x++){
-                objects.add(new TTT(mapsize-30,(int)(Math.random()*mapsize),2,objects,lasers));
+                objects.add(new TTT(mapsize-30,(int)(Math.random()*mapsize),2,objects,lasers,null));
             }
             start=false;
             level++;
@@ -123,7 +123,7 @@ public class FlightDemo extends JPanel implements MouseListener,MouseWheelListen
 
 
         for(int x=0;x<objects.size();x++){
-            objects.get(x).draw(g);
+            objects.get(x).draw(a);
         }
         for(int x=0;x<lasers.size();x++){
             lasers.get(x).draw(g);

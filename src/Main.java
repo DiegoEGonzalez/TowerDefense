@@ -18,10 +18,7 @@ public class Main implements ActionListener{
         Main confusing = new Main();
         //while (true) {
         //game.repaint();//repaint the Game
-        //java.awt.EventQueue.invokeLater(new Runnable() {
-        //  public void run() {
-        //game.update();
-        //}
+        //j
         //});
 
 

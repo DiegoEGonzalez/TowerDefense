@@ -5,8 +5,8 @@ public class TTT extends Minions {
     boolean left,right,down,up;
 
 
-    public TTT(int x, int y, int kind, ArrayList<Unit> objects, ArrayList<Laser> lasers){
-        super(x,y,30,30,kind,10,4,5,objects,lasers);
+    public TTT(int x, int y, int kind, ArrayList<Unit> objects, ArrayList<Laser> lasers,Unit parent){
+        super(x,y,30,30,kind,10,4,5,objects,lasers,parent);
         recharge=1;
         lastAction=System.nanoTime();
         alive=true;
@@ -15,38 +15,34 @@ public class TTT extends Minions {
         offensive=User.strategyTTT;
     }
 
-    public void draw(Graphics g){
-        super.draw(g);
-        Graphics2D a = (Graphics2D)g;
-        a.translate(x,y);
+    public void draw(Graphics2D a){
+        //super.draw(g);
+       // Graphics2D a = (Graphics2D)g;
+
+        a.translate(x,y);     //i haven't added anything, check bugs
         a.rotate(-angle);
+
+        //a.setColor(new Color(255,255,255,50));
+        //g.drawOval(-w/2,-h/2,w,h);
+        //g.drawOval(-w/2-200,-h/2-200,w+400,h+400);
+        //g.drawOval(-w/2-20,-h/2-20,w+40,h+40);
+        //g.drawOval(-w/2-40,-h/2-40,w+80,h+80);
+        //g.drawOval(-w/2-60,-h/2-60,w+160,h+160);
 
         if(kind==1)
-            g.setColor(Color.BLUE);
+            a.setColor(Color.BLUE);
         else
-            g.setColor(Color.RED);
+            a.setColor(Color.RED);
 
-        g.drawLine(-10,-10,-10,10);
-        g.drawLine(-10,-10,10,0);
-        g.drawLine(-10,10,10,0);
+        a.drawLine(-10,-10,-10,10);
+        a.drawLine(-10,-10,10,0);
+        a.drawLine(-10,10,10,0);
+
+
 
         a.rotate(angle);
         a.translate(-x,-y);
 
-        /**
-         double a2 = Math.atan2((double)-(objects.get(1).y-y),(double)(objects.get(1).x-x));
-         a2=(a2 %= Math.toRadians(360)) >= 0 ? a2 : (a2 + Math.toRadians(360));
-         a.translate(x,y);
-         a.rotate(-a2);
-         g.drawLine(0,0,100,0);
-         a.rotate(a2);
-         a.translate(-x,-y);
-         **/
-        a.translate(x,y);
-        a.rotate(-angle);
-        g.drawLine(0,0,100,0);
-        a.rotate(angle);
-        a.translate(-x,-y);
 
     }
 

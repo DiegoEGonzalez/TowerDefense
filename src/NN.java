@@ -17,7 +17,7 @@ public class NN extends Unit {
             if (objects.get(q) == this)
                 continue;
                     if((objects.get(q)instanceof NN)) {
-                        if(collisionCircle(x,y,150,objects.get(q).x,objects.get(q).y,10)>0) {
+                        if(collisionCircle(x,y,150,objects.get(q).x,objects.get(q).y,10)) {
                             g.drawLine(x,y,objects.get(q).x,objects.get(q).y);
                         }
                     }

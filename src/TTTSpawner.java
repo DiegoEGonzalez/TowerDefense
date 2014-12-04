@@ -6,6 +6,11 @@ public class TTTSpawner extends Spawner{
         super(x,y,kind,objects,lasers);
     }
     public void action(){
-        objects.add(new TTT(x, y, kind, objects, lasers));
+        if((System.nanoTime()-lastAction)/1000000000.0>recharge&&count<maxcount) {
+            objects.add(new TTT(x, y, kind, objects, lasers,this));
+            lastAction=System.nanoTime();
+            count++;
+        }
+
     }
 }

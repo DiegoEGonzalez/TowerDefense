@@ -4,9 +4,14 @@ import java.util.ArrayList;
 public class SSSSpawner extends Spawner{
     public SSSSpawner(int x, int y, int kind, ArrayList<Unit> objects, ArrayList<Laser> lasers){
         super(x,y,kind,objects,lasers);
-        recharge=8;
+        recharge=5;
     }
     public void action(){
-        objects.add(new SSS(x,y,kind,objects,lasers));
+        if((System.nanoTime()-lastAction)/1000000000.0>recharge&&count<maxcount) {
+            objects.add(new SSS(x, y, kind, objects, lasers,this));
+            lastAction=System.nanoTime();
+            count++;
+        }
+
     }
 }

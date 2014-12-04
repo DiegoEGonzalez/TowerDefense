@@ -7,14 +7,16 @@ public class User {
     static int TTTCost = 50;
     static int SSSCost = 125;
     static int WWWCost = 200;
+    static int EEECost = 500;
     static boolean unlockedTTT=true;
-    static boolean unlockedSSS=false;
-    static boolean unlockedWWW=false;
+    static boolean unlockedSSS=true;
+    static boolean unlockedWWW=true;
+    static boolean unlockedEEE=true;
     static int level=0;
 
     static boolean strategyTTT=true;
     static boolean strategySSS=true;
-    static boolean strategyWWW=false;
+    static boolean strategyWWW=true;
 
     static int targeti=-1;
     static int targetX=-1;

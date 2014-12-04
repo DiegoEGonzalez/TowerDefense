@@ -8,7 +8,7 @@ public class BASE extends Unit {
         alive=true;
     }
 
-    public void draw(Graphics g){
+    public void draw(Graphics2D g){
         super.draw(g);
         g.setColor(Color.WHITE);
         g.drawRect(x-50,y-50,100,100);
