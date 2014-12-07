@@ -482,7 +482,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
 
         if(selection==1)
             g.drawRect(5, 180, 190, 40);
-        if(user.moolah<user.TTTCost)
+        if(user.moolah<((int)((double)(user.TTT+1)/user.maxTTT*user.maxTTTCost)))
             g.setColor(Color.DARK_GRAY);
 
         g.drawString(" ^^^ : "+((int)((double)(user.TTT+1)/user.maxTTT*user.maxTTTCost))+" | TTT",10,200);
@@ -772,7 +772,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
                         if(running&&user.moolah>=((double)(user.TTT+1)/user.maxTTT*user.maxTTTCost)&&user.TTT<user.maxTTT||developer) {
                             objects.add(new TTTSpawner(worldX, worldY, 1, objects, lasers));
                             //user.TTT++;
-                            user.moolah -= user.TTTCost;
+                           // user.moolah -= user.TTTCost;
                             user.TTTCost += (int)((double)(user.TTT+1)/user.maxTTT*user.maxTTTCost);
                         }
                             selection = 0;
@@ -783,7 +783,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
                             objects.add(new SSSSpawner(worldX, worldY, 1, objects, lasers));
                             //user.SSS++;
                             user.moolah -= (int)((double)(user.SSS+1)/user.maxSSS*user.maxSSSCost);
-                            user.SSSCost += 5;
+                           // user.SSSCost += 5;
                         }
                             selection = 0;
 
@@ -793,7 +793,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
                             objects.add(new WWWSpawner(worldX, worldY, 1, objects, lasers));
                             //user.WWW++;
                             user.moolah -= (int)((double)(user.WWW+1)/user.maxWWW*user.maxWWWCost);
-                            user.WWWCost += 5;
+                           // user.WWWCost += 5;
                         }
                         selection=0;
                         break;
@@ -802,7 +802,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
                         objects.add(new EEESpawner(worldX, worldY, 1, objects, lasers));
                         //user.WWW++;
                         user.moolah -=(int)((double)(user.EEE+1)/user.maxEEE*user.maxEEECost);
-                        user.EEECost *= 2;
+                        //user.EEECost *= 2;
                         }
                         selection=0;
                         break;
