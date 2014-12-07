@@ -774,6 +774,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
                             //user.TTT++;
                            // user.moolah -= user.TTTCost;
                             user.TTTCost += (int)((double)(user.TTT+1)/user.maxTTT*user.maxTTTCost);
+                            user.moolah -= (int)((double)(user.TTT+1)/user.maxTTT*user.maxTTTCost);
                         }
                             selection = 0;
 
