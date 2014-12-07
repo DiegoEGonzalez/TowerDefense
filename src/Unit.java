@@ -69,6 +69,7 @@ public abstract class Unit{
 
             if((kind==1||kind==2)&&(b.kind==4))
                 continue;
+            int health2=health;
             if(collisionCircle(x,y,h/2+h/4,(int)b.getX(),(int)b.getY(),2)&&b.kind!=kind){
                 health-=b.getDamage();
 
@@ -88,7 +89,8 @@ public abstract class Unit{
                 }
 
 
-
+                b.damage-=health2;
+                if(b.damage<=0)
                 b.kill();
 
             }

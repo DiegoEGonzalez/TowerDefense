@@ -2,15 +2,23 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class BASE extends Unit {
+    long birthdate=0;
 
     public BASE(int x, int y, int kind, ArrayList<Unit> objects, ArrayList<Laser> lasers){
         super(x, y, 100,100,kind,5000,objects,lasers);
         alive=true;
+        birthdate=System.nanoTime();
     }
 
     public void draw(Graphics2D g){
         super.draw(g);
-        g.setColor(Color.WHITE);
+        if(Alpha.selected != this||Alpha.selection!=5)
+            g.setColor(Color.lightGray);
+        else {
+            g.setColor(new Color(0,255,255,15));
+            g.fillOval(x - User.basefield / 2, y - User.basefield / 2, User.basefield, User.basefield);
+            g.setColor(Color.BLUE);
+        }
         g.drawRect(x-50,y-50,100,100);
         if(kind==1)
             g.setColor(Color.blue);

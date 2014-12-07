@@ -13,6 +13,7 @@ public class EEESpawner extends Spawner{
         super(x,y,kind,objects,lasers);
         recharge=25;
         maxcount=2;
+        name = "EEE SPAWNER";
     }
     public void action(){
 

@@ -17,6 +17,9 @@ public class WWW extends Minions {
         shotpower=100;
         if(kind==1)
             offensive=User.strategyWWW;
+
+        // used to target TTT to do the most damage
+        enemyindex = 6;
     }
 
 

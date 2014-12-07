@@ -12,11 +12,13 @@ public class Minions extends Unit{
     double bulletLife=100;
     boolean smart=false;
     boolean attack=true;
+    double wanderangle=Math.toRadians(.25);
+    boolean horde=false;
 
-    ArrayList<Integer>strategy = new ArrayList<Integer>();
-    ArrayList<Integer>strategy2 = new ArrayList<Integer>();
+    int protectindex=0;
+    int enemyindex=0;
 
-
+    boolean directed=false;
 
 
     public Minions(int x, int y,int w, int h, int kind, int health, double power,int damage,ArrayList<Unit> objects, ArrayList<Laser> lasers,Unit parent){
@@ -68,23 +70,20 @@ public class Minions extends Unit{
             y += Math.round(vy);
         }
 
+        if(kind==1&&User.beaconing&&collisionCircle(x,y,h/2,User.userx,User.userY,150))
+            directed=true;
+        else
+        directed=false;
+
 
         if (left || right || up || down){
             setAngle(angle+Math.toRadians(180));
-        }else if(clear()){
+        }else if(clear()||directed){
 
-            if(findTarget(hate)==-1) {
-                for (int b=0;b<5;b++){
-                    if(hate+b>3)
-                        break;
-                    if(findTarget(hate+b)!=-1) {
-                        seek(hate + b);
-                        break;
-                    }
-                }
-                //wander();
-            } else {
+            if(findTarget(hate)!=-1||directed) {
                 seek(findTarget(hate));
+            } else {
+                wander();
             }
             move2();
 
@@ -206,31 +205,12 @@ public class Minions extends Unit{
     }
 
     public void seek(int i){
-        double a2 = Math.atan2((double)-(objects.get(i).y-y),(double)(objects.get(i).x-x));
-        a2=(a2 %= Math.toRadians(360)) >= 0 ? a2 : (a2 + Math.toRadians(360));
-
-        double dif = a2-angle;
-        if(dif>Math.toRadians(180))
-            dif-=Math.toRadians(360);
-        else if(dif<Math.toRadians(-180))
-            dif+=Math.toRadians(360);
-
-        if(attack) {
-            if (dif < 0)
-                setAngle(angle - Math.toRadians(.5) * power);
-            else
-                setAngle(angle + Math.toRadians(.5) * power);
-        }else {
-            if (dif < 0)
-                setAngle(angle + Math.toRadians(.5) * power);
-            else
-                setAngle(angle - Math.toRadians(.5) * power);
+        double a2=0;
+        if(!directed) {
+            a2 = Math.atan2((double) -(objects.get(i).y - y), (double) (objects.get(i).x - x));
+        } else {
+            a2 = Math.atan2((double) -(User.userY - y), (double) (User.userx - x));
         }
-
-    }
-
-    public void seek(int i, int q){
-        double a2 = Math.atan2((double)-(q-y),(double)(i-x));
         a2=(a2 %= Math.toRadians(360)) >= 0 ? a2 : (a2 + Math.toRadians(360));
 
         double dif = a2-angle;
@@ -239,19 +219,24 @@ public class Minions extends Unit{
         else if(dif<Math.toRadians(-180))
             dif+=Math.toRadians(360);
 
-        if(dif<0)
-            angle-=Math.toRadians(.5)*power;
-        else
-            angle+=Math.toRadians(.5)*power;
+        if((compareAngle(angle,a2))) {
+            if(compareAngle(angle+ Math.toRadians(2) * power,a2)==compareAngle(angle,a2))
+            setAngle(angle + Math.toRadians(2) * power);
+            else
+                setAngle(a2);
+        }else {
+            if(compareAngle(angle- Math.toRadians(2) * power,a2)==compareAngle(angle,a2))
+            setAngle(angle - Math.toRadians(2) * power);
+            else
+            setAngle(a2);
+        }
 
     }
 
     public void wander(){
-        if (Math.random() < .5) {
-            setAngle(angle +Math.toRadians(1 * power));
-        } else {
-            setAngle(angle - Math.toRadians(1 * power));
-        }
+        if(Math.random()<.0005)
+            wanderangle*=-1;
+        setAngle(angle+wanderangle);
     }
 
     public void action() {
@@ -373,7 +358,7 @@ public class Minions extends Unit{
         for(int q=0;q<objects.size();q++) {
             if ((objects.get(q).kind!=3))
                 continue;
-            int searchRadius = h/2+100; //radius of whether the object will be findable
+            int searchRadius = h/2+10; //radius of whether the object will be findable
             boolean search = collisionCircle(x,y,searchRadius,objects.get(q).x,objects.get(q).y,objects.get(q).h/2); // whether the object is close enough to be considered
             boolean facing = isFacing(q,45); //whether it's facing the object
             if(search&&facing) {
@@ -392,139 +377,147 @@ public class Minions extends Unit{
         return index;
     }
 
-    public int stayTogether(){
-        int index=-1;
-        for(int q=0;q<objects.size();q++) {
-            if (objects.get(q) == this||objects.get(q).kind!=kind)
-                continue;
-            int searchRadius = 100; //radius of whether the object will be findable
-            boolean search = collisionCircle(x,y,searchRadius,objects.get(q).x,objects.get(q).y,20); // whether the object is close enough to be considered
-            boolean facing = isFacing(q,20); //whether it's facing the object
-            if(search&&facing) {
-                if(index==-1) {
-                    index = q;
-                }
-
-                int distance1 = (int)Math.sqrt(Math.pow(x-objects.get(q).x,2)+Math.pow(y-objects.get(q).y,2)); //distance possible object
-                int distance2 = ((int)Math.sqrt(Math.pow(x-objects.get(index).x,2)+Math.pow(y-objects.get(index).y,2))); // distance for current closest object
-                if (distance1<distance2) {
-                    index = q;
-                }
-
-            }
-        }
-
-        if(index!=-1) {
-            return findClosest();
-        } else {
-            index=-1;
-            for(int q=0;q<objects.size();q++) {
-                if (objects.get(q) == this||objects.get(q).kind!=kind)
-                    continue;
-                int searchRadius = 400; //radius of whether the object will be findable
-                boolean search = collisionCircle(x,y,searchRadius,objects.get(q).x,objects.get(q).y,20); // whether the object is close enough to be considered
-                boolean facing = isFacing(q,20); //whether it's facing the object
-                if(search&&facing) {
-                    if(index==-1) {
-                        index = q;
-                    }
-
-                    int distance1 = (int)Math.sqrt(Math.pow(x-objects.get(q).x,2)+Math.pow(y-objects.get(q).y,2)); //distance possible object
-                    int distance2 = ((int)Math.sqrt(Math.pow(x-objects.get(index).x,2)+Math.pow(y-objects.get(index).y,2))); // distance for current closest object
-                    if (distance1<distance2) {
-                        index = q;
-                    }
-
-                }
-            }
-            if(index!=-1)
-                return index;
-            else
-                return findClosest();
-        }
-
-
-
-
-    }
 
     public int findTarget(int thing){
+        int index = tacticAlgorithm(false,enemyindex);
+        if(index==-1){
+            index=tactic(false);
+        }
 
-        int indexOfClosest=-1;
+        if(index!=-1&&horde) {
+            boolean enemynearby = collisionCircle(x, y, h / 2 + 250, objects.get(index).x, objects.get(index).y, objects.get(index).h / 2);
+            int index2 = tacticAlgorithm(true, protectindex);
+            if (index2 == -1)
+                index2 = tactic(true);
+            if(index2!=-1&&objects.get(index2).isInMap()&&isInMap()) {
+                boolean friendnearby = collisionCircle(x, y, h / 2 + 250, objects.get(index2).x, objects.get(index2).y, objects.get(index2).h / 2);
+                boolean friendReallyClose = collisionCircle(x, y, h / 2 + 50, objects.get(index2).x, objects.get(index2).y, objects.get(index2).h / 2);
+                if (!enemynearby && friendnearby&&!friendReallyClose)
+                    index = index2;
+            }
+        } else if(horde){
+            int index2 = tacticAlgorithm(true, protectindex);
+            if (index2 == -1)
+                index2 = tactic(true);
+            if(index2!=-1&&objects.get(index2).isInMap()&&isInMap()) {
+                boolean friendnearby = collisionCircle(x, y, h / 2 + 250, objects.get(index2).x, objects.get(index2).y, objects.get(index2).h / 2);
+                boolean friendReallyClose = collisionCircle(x, y, h / 2 + 50, objects.get(index2).x, objects.get(index2).y, objects.get(index2).h / 2);
+                if (friendnearby && !friendReallyClose)
+                    index = index2;
+            }
+        }
+        return index;
+    }
+
+    public int tactic(boolean defense){
+        int index=-1;
         for(int q=0;q<objects.size();q++) {
 
             if (objects.get(q) == this)
                 continue;
 
-            if(offensive) {
-                if (objects.get(q).kind == kind||objects.get(q).kind==3)
-                    continue;
-            } else {
-                if (objects.get(q).kind != kind)
-                    continue;
-            }
+            if(!objects.get(q).isInMap()&&isInMap())
+                continue;
 
+            if(objects.get(q) instanceof Asteroid)
+                continue;
 
-            switch (thing){
-                case 1:
-                    if(!(objects.get(q)instanceof BASE))
-                        continue;
-                    break;
-                case 2:
-                    if(!((objects.get(q)instanceof SSSSpawner)||(objects.get(q)instanceof TTTSpawner)||(objects.get(q)instanceof WWWSpawner)))
-                        continue;
-                    break;
-                case 3:
-                    if(!((objects.get(q)instanceof SSS)||(objects.get(q)instanceof TTT)||(objects.get(q)instanceof WWW)))
-                        continue;
-                    break;
-
-            }
-
-
-            if(!objects.get(q).isInMap())
+            if(objects.get(q).kind==kind&&!defense)
+                continue;
+            else if(objects.get(q).kind!=kind&&defense)
                 continue;
 
 
-            //int searchradius = (kind==1)?300:1000;
+            boolean searchable = collisionCircle(x,y,h/2+400,objects.get(q).x,objects.get(q).y,objects.get(q).h/2);
 
-            //if(collisionCircle(x,y,Alpha.mapsize*2,objects.get(q).x,objects.get(q).y,20)) {
-            int distance1 = (int)Math.sqrt(Math.pow(x-objects.get(q).x,2)+Math.pow(y-objects.get(q).y,2));
-            //if(distance1<searchradius) {
-            if (indexOfClosest == -1)
-                indexOfClosest = q;
-            else if (distance1 < ((int) Math.sqrt(Math.pow(x - objects.get(indexOfClosest).x, 2) + Math.pow(y - objects.get(indexOfClosest).y, 2))))
-                indexOfClosest = q;
+            if(searchable) {
+                int distance1 = (int) Math.sqrt(Math.pow(x - objects.get(q).x, 2) + Math.pow(y - objects.get(q).y, 2));
 
-            //}
-            // }
+                if (index == -1)
+                    index = q;
+                else if (distance1 < ((int) Math.sqrt(Math.pow(x - objects.get(index).x, 2) + Math.pow(y - objects.get(index).y, 2))))
+                    index = q;
+            }
+
         }
-        return indexOfClosest;
 
+        return index;
     }
-    /**
-     public void determineThreat(int index){
 
-     boolean insideMap = (x < Alpha.mapsize && x > 0 && y < Alpha.mapsize / 2 && y > -Alpha.mapsize / 2);
-     boolean goingInside = (objects.get(index).x<Alpha.mapsize&&objects.get(index).x>0&&objects.get(index).y<Alpha.mapsize/2&&objects.get(index).y>-Alpha.mapsize/2);
-     if (insideMap&&goingInside) {
-     int threat = Alpha.threat[(int) ((double) x / Alpha.mapsize * 10)][(int) (((double) y + Alpha.mapsize / 2) / Alpha.mapsize * 10)]++;
-     int threat2 = Alpha.threat2[(int) ((double) objects.get(index).x / Alpha.mapsize * 10)][(int) (((double) objects.get(index).y + Alpha.mapsize / 2) / Alpha.mapsize * 10)]++;
+    public int tacticAlgorithm(boolean defense, int value){
+        int index=-1;
+        for(int q=0;q<objects.size();q++) {
 
-     if(threat2>threat){
-     offensive=false;
-     } else {
-     offensive=true;
-     }
+            if (objects.get(q) == this)
+                continue;
+
+            if(!objects.get(q).isInMap()&&isInMap())
+                continue;
+
+            if(objects.get(q) instanceof Asteroid)
+                continue;
+
+            if(objects.get(q).kind==kind&&!defense)
+                continue;
+            else if(objects.get(q).kind!=kind&&defense)
+                continue;
 
 
-     } else {
-     offensive=true;
-     }
+            switch (value){
+                case 0:
+                    if(!(objects.get(q) instanceof Asteroid))
+                        continue;
+                    break;
+                case 1:
+                    if(!(objects.get(q) instanceof BASE))
+                        continue;
+                    break;
+                case 2:
+                    if(!(objects.get(q) instanceof TTTSpawner))
+                        continue;
+                    break;
+                case 3:
+                    if(!(objects.get(q) instanceof SSSSpawner))
+                        continue;
+                    break;
+                case 4:
+                    if(!(objects.get(q) instanceof WWWSpawner))
+                        continue;
+                    break;
+                case 5:
+                    if(!(objects.get(q) instanceof EEESpawner))
+                        continue;
+                    break;
+                case 6:
+                    if(!(objects.get(q) instanceof TTT))
+                        continue;
+                    break;
+                case 7:
+                    if(!(objects.get(q) instanceof SSS))
+                        continue;
+                    break;
+                case 8:
+                    if(!(objects.get(q) instanceof WWW))
+                        continue;
+                    break;
+                case 9:
+                    if(!(objects.get(q) instanceof EEE))
+                        continue;
+                    break;
+            }
 
+            boolean searchable = collisionCircle(x,y,h/2+400,objects.get(q).x,objects.get(q).y,objects.get(q).h/2);
 
-     }
-     **/
+            if(searchable) {
+                int distance1 = (int) Math.sqrt(Math.pow(x - objects.get(q).x, 2) + Math.pow(y - objects.get(q).y, 2));
+                if (index == -1)
+                    index = q;
+                else if (distance1 < ((int) Math.sqrt(Math.pow(x - objects.get(index).x, 2) + Math.pow(y - objects.get(index).y, 2))))
+                    index = q;
+            }
+        }
+        return index;
+    }
 
 
     public void shoot(int index){
@@ -563,8 +556,6 @@ public class Minions extends Unit{
         double angledifference2 = (angledifference)+Math.toRadians(360); //backup angle taking into consideration that angles only go from 0-359
         return (angledifference>Math.toRadians(180))?angledifference2:angledifference;
     }
-
-
 
     public void setAngle(double angle){
         this.angle=angle;

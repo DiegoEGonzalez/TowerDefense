@@ -14,6 +14,9 @@ public class SSS extends Minions {
         shotpower=20;
         bulletLife=10;
         hate=3;
+
+        // used to target WWW to do the most damage
+        enemyindex = 8;
     }
 
     public void move2(){

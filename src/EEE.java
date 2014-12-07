@@ -14,6 +14,8 @@ super(x,y,30,30,kind,40,1,5,objects,lasers,parent);
     bulletLife=.3;
     shotpower=3;
     offensive=true;
+
+    enemyindex=0;
 }
         public void shoot(int index){
             lasers.add(new Laser(x, y, objects.get(index).x, objects.get(index).y, 4,damage,shotpower, bulletLife));

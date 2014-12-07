@@ -10,6 +10,7 @@ import java.util.Iterator;
 
 public class Alpha extends JPanel implements MouseListener,MouseWheelListener, MouseMotionListener{
     static int mapsize=1500;
+    static int maxmapsize=5000;
     ArrayList<Unit> objects = new ArrayList<Unit>();
     ArrayList<Laser> lasers = new ArrayList<Laser>();
     static ArrayList<Particles> fx = new ArrayList<Particles>();
@@ -21,22 +22,32 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
     int offsety=0;//(int)(-400/scaler);
     int currentx=0;
     int currenty=0;
-    int selection =0;
+    static int selection =0;
     long lastAction=System.nanoTime();
     int level=1;
     boolean start=false;
     boolean running=false;
+    boolean beacon=false;
+
+
+    static Unit selected;
+    boolean spawnSelected=false;
 
     //variables for stars
     ArrayList <Integer> starX = new ArrayList<Integer>(); // x star positions
     ArrayList <Integer> starY = new ArrayList<Integer>(); // y star positions
     //whether or not to display developer shit
-    boolean developer=true;
+    static boolean developer=false;
     int safebase = 600;
     int numberOfAsteroids=50;
 
     User user;
     Enemy enem;
+
+
+    int userx=0;
+    int usery=0;
+
 
     public Alpha() {
         setLayout(null);
@@ -50,6 +61,8 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
         key();
 
         objects.add(new BASE(50,0, 1, objects, lasers));
+        selected=objects.get(0);
+        selection=5;
         //objects.add(new BASE(mapsize-50,mapsize/2-50,2,objects,lasers));
         user = new User();
         enem= new Enemy(objects,lasers);
@@ -62,7 +75,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
                 sizerandom=(int)(Math.random()*100)+20;
                 spawnx=(int)(Math.random()*(mapsize+mapsize/4));
                 spawny=(int)(Math.random()*(mapsize+mapsize/2))-mapsize/4-mapsize/2;
-            } while(collision(spawnx-sizerandom/2,spawny-sizerandom/2,sizerandom,sizerandom,0,-safebase/2,safebase,safebase));
+            } while(collisionCircle(spawnx,spawny,sizerandom/2,50,0,User.basefield/2));
             objects.add(new Asteroid(spawnx,spawny,sizerandom,sizerandom,objects,lasers));
         }
 
@@ -133,10 +146,38 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
                 "num4");
         getActionMap().put("num4",
                 num4);
+        Action num0 = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+
+                selection=0;
+
+            }
+        };
+        getInputMap().put(KeyStroke.getKeyStroke("0"),
+                "num0");
+        getActionMap().put("num0",
+                num0);
+
+        Action d = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+
+                developer=!developer;
+
+            }
+        };
+        getInputMap().put(KeyStroke.getKeyStroke("D"),
+                "D");
+        getActionMap().put("D",
+                d);
     }
 
     public void update(){
         if(running){
+
+
+
+
+
         if((System.nanoTime()-lastAction)/1000000000.0>5&&start){
             start=false;
             level++;
@@ -166,6 +207,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
         int ttt=0;
         int sss=0;
         int www=0;
+            int eee=0;
         int enemy=0;
         /**
         for(int x=0;x<threat.length;x++){
@@ -206,7 +248,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
 
 
             if(!b.alive) {
-                iterator.remove();
+
 
 
 
@@ -249,22 +291,31 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
                     user.moolah+=30;
                 }
 
+                if(b == selected&&selection==5)
+                    selection=0;
+
+
+                iterator.remove();
+
             }
-            if(b.kind==1) {
-                if (b instanceof TTT) {
-                    ttt++;
-                } else if (b instanceof SSS) {
-                    sss++;
-                } else if (b instanceof WWW) {
-                    www++;
-                }
-            } else if(b.kind==2){
-                enemy++;
-            }
+
+            if( b instanceof TTTSpawner)
+                ttt++;
+            if( b instanceof SSSSpawner)
+                sss++;
+            if( b instanceof WWWSpawner)
+                www++;
+            if( b instanceof EEESpawner)
+                eee++;
+
+
+
         }
-        user.TTT=ttt;
-        user.SSS=sss;
-        user.WWW=www;
+            user.TTT=ttt;
+            user.SSS=sss;
+            user.WWW=www;
+            user.EEE=eee;
+
 
         for (Iterator<Laser> iterator = lasers.iterator(); iterator.hasNext(); ) {
             Laser b = iterator.next();
@@ -331,7 +382,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
         a.translate((offsetx),(offsety)); // applies offset
         if(developer) {
             g.setColor(Color.GRAY);
-            g.drawRect(0, -safebase / 2, safebase, safebase);
+           // g.drawRect(0, -safebase / 2, safebase, safebase);   replaced with forcefield
             g.drawRect(0, -mapsize / 2, mapsize, mapsize); //draws map
             g.drawRect(0, -mapsize / 2 - mapsize / 4, mapsize + mapsize / 4, mapsize + mapsize / 2); // draws meteor spawn area
             g.drawRect(0, -mapsize / 2 - mapsize / 4 - mapsize / 8, mapsize + mapsize / 4 + mapsize / 8, mapsize + mapsize / 2 + mapsize / 4); // draws spawn area
@@ -350,6 +401,8 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
             }
              **/
         }
+
+
         for(int x=0;x<objects.size();x++){
             objects.get(x).draw(a);
         }
@@ -359,6 +412,17 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
         for(int x=0;x<fx.size();x++){
             fx.get(x).draw(g);
         }
+
+
+        ///beacon
+        if(User.beaconing&&running) {
+            a.setColor(new Color(255, 255, 0, 15));
+            a.fillOval(User.userx-150, User.userY-150, 300, 300);
+
+        }
+
+
+
         //undoes the transformation
         a.translate(-(offsetx),-(offsety));
         a.scale(1.0/scaler,1.0/scaler);
@@ -391,9 +455,13 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
          **/
 
 
+
+
         drawUI(g);
         if (developer)
             drawDev(g);
+
+
     }
 
     public void drawUI(Graphics g){
@@ -403,7 +471,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
         g.drawRect(0,0,200,Shell.DEFAULT_WINDOWSIZEY);
         g.drawRect(0,0,200,100);
         g.drawString("\\\\ RETRO RIVALS //",center(200,"\\\\ RETRO RIVALS //",g),30);
-        g.drawString("<< ALPHA TEST v.07 >>",center(200,"<< ALPHA TEST v.07 >>",g),60);
+        g.drawString("<< ALPHA TEST v.09 >>",center(200,"<< ALPHA TEST v.09 >>",g),60);
 
         g.drawString("^^^ : "+user.moolah,10,130);
         g.drawString("wave : " +(level-1),10,150);
@@ -417,17 +485,17 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
         if(user.moolah<user.TTTCost)
             g.setColor(Color.DARK_GRAY);
 
-        g.drawString(" ^^^ : "+user.TTTCost+" | TTT",10,200);
+        g.drawString(" ^^^ : "+((int)((double)(user.TTT+1)/user.maxTTT*user.maxTTTCost))+" | TTT",10,200);
 
         g.setColor(Color.WHITE);
         g.drawRect(0,225,200,50);
         if(selection==2)
             g.drawRect(5,230,190,40);
-        if((user.moolah<user.SSSCost&&user.unlockedSSS)||(user.moolah<100&&!user.unlockedSSS))
+        if((user.moolah<(int)((double)(user.SSS+1)/user.maxSSS*user.maxSSSCost)&&user.unlockedSSS)||(user.moolah<100&&!user.unlockedSSS))
             g.setColor(Color.DARK_GRAY);
 
         if(user.unlockedSSS){
-            g.drawString(" ^^^ : "+user.SSSCost+" | SSS",10,250);
+            g.drawString(" ^^^ : "+(int)((double)(user.SSS+1)/user.maxSSS*user.maxSSSCost)+" | SSS",10,250);
         } else{
             g.drawString(" ^^^ : 100 | UNLOCK SSS ",10,250);
         }
@@ -436,11 +504,11 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
         g.drawRect(0,275,200,50);
         if(selection==3)
             g.drawRect(5,280,190,40);
-        if((user.moolah<user.WWWCost&&user.unlockedWWW)||(user.moolah<200&&!user.unlockedWWW))
+        if((user.moolah<(int)((double)(user.WWW+1)/user.maxWWW*user.maxWWWCost)&&user.unlockedWWW)||(user.moolah<200&&!user.unlockedWWW))
             g.setColor(Color.DARK_GRAY);
 
         if(user.unlockedWWW){
-            g.drawString(" ^^^ : "+user.WWWCost+" | WWW",10,300);
+            g.drawString(" ^^^ : "+(int)((double)(user.WWW+1)/user.maxWWW*user.maxWWWCost)+" | WWW",10,300);
         } else{
             g.drawString(" ^^^ : 200 | UNLOCK WWW ",10,300);
         }
@@ -450,35 +518,95 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
         g.drawRect(0,325,200,50);
         if(selection==4)
             g.drawRect(5,330,190,40);
-        if((user.moolah<user.EEECost&&user.unlockedEEE)||(user.moolah<200&&!user.unlockedEEE))
+        if((user.moolah<(int)((double)(user.EEE+1)/user.maxEEE*user.maxEEECost)&&user.unlockedEEE)||(user.moolah<200&&!user.unlockedEEE))
             g.setColor(Color.DARK_GRAY);
 
         if(user.unlockedEEE){
-            g.drawString(" ^^^ : "+user.EEECost+" | EEE",10,350);
+            g.drawString(" ^^^ : "+(int)((double)(user.EEE+1)/user.maxEEE*user.maxEEECost)+" | EEE",10,350);
         } else{
             g.drawString(" ^^^ : 500 | UNLOCK EEE ",10,350);
         }
 
+
+        ///////////////////// USER STRATEGY BOX ///////////////
         g.setColor(Color.WHITE);
         g.drawRect(0,500,200,300);
-        if(selection==1){
-            g.drawString("TTT",80,530);
-            g.drawRect(10,560,100,30);
-            g.drawString((user.strategyTTT)?"OFFENSE":"DEFENSE",20,580);
-            g.drawString("Select Target",20,630);
-            g.drawRect(10,610,100,30);
+        switch (selection){
+            case 1:
+                g.drawString("TTT",80,530);
+                g.drawString("> basic unit.",20,560);
+                g.drawString("[ speed ] : "+User.TTTspeed,20,590);
+                g.drawString("[ damage ] : "+User.TTTdamage,20,610);
+                g.drawString("[ sensor ] : "+User.TTTsearch,20,630);
+                g.drawString("[ range ] : "+User.TTTrange,20,650);
+                //g.drawRect(10,560,100,30);
+                //g.drawString((user.strategyTTT)?"OFFENSE":"DEFENSE",20,580);
+                break;
+            case 2:
+                g.drawString("SSS",80,530);
+                g.drawString("> fast aggressive unit.",20,560);
+                g.drawString("[ speed ] : "+User.SSSspeed,20,590);
+                g.drawString("[ damage ] : "+User.SSSdamage,20,610);
+                g.drawString("[ sensor ] : "+User.SSSsearch,20,630);
+                g.drawString("[ range ] : "+User.SSSrange,20,650);
+                //g.drawString((user.strategySSS)?"OFFENSE":"DEFENSE",20,580);
+                break;
+            case 3:
+                g.drawString("WWW",80,530);
+                g.drawString("> strong heavy tank unit.",20,560);
+                g.drawString("[ speed ] : "+User.WWWspeed,20,590);
+                g.drawString("[ damage ] : "+User.WWWdamage,20,610);
+                g.drawString("[ sensor ] : "+User.WWWsearch,20,630);
+                g.drawString("[ range ] : "+User.WWWrange,20,650);
+                //g.drawString((user.strategyWWW)?"OFFENSE":"DEFENSE",20,580);
+                break;
+            case 4:
+                g.drawString("EEE",80,530);
+                g.drawString("> mining unit.",20,560);
+                g.drawString("[ speed ] : "+User.EEEspeed,20,590);
+                g.drawString("[ damage ] : "+User.EEEdamage,20,610);
+                g.drawString("[ sensor ] : "+User.EEEsearch,20,630);
+                g.drawString("[ range ] : "+User.EEErange,20,650);
+                break;
+            case 5:
+                if(selected instanceof Spawner) {
+                    g.drawString(((Spawner)selected).name, center(200, ((Spawner)selected).name, g), 530);
+                    g.drawString(((Spawner)selected).count + "/" + ((Spawner)selected).maxcount, 20, 560);
+                    long timealive = (System.nanoTime() - ((Spawner)selected).birthdate) / 1000000000;
+                    g.drawString("[ lifetime ] : " + timealive + "s", 20, 580);
+                    g.drawString("[ rate ] : " + selected.recharge, 20, 600);
+                    g.drawString("[ health ] : " + selected.health + "/" + selected.maxhealth, 20, 620);
+                    g.drawString("[ shields ] : " + ((((Spawner)selected).forceon)?"ON":"OFF"), 20, 640);
 
-        } else if(selection==2){
-            g.drawString("SSS",80,530);
-            g.drawString((user.strategySSS)?"OFFENSE":"DEFENSE",20,580);
-        } else if(selection==3){
-            g.drawString("WWW",80,530);
-            g.drawString((user.strategyWWW)?"OFFENSE":"DEFENSE",20,580);
-        } else if(selection==4){
-            g.drawString("EEE",80,530);
-            g.drawString("mining ship.",60,580);
+                    if(selected instanceof TTTSpawner)
+                        g.drawString("SELL ^^^ : " + (int)(((double) (user.TTT + 1) / user.maxTTT * user.maxTTTCost) * ((double) (user.TTT + 1) / user.maxTTT)), center(200, "SELL ^^^ : " + (int)(((double) (user.TTT + 1) / user.maxTTT * user.maxTTTCost) * ((double) (user.TTT + 1) / user.maxTTT)), g), 700);
+                    if(selected instanceof SSSSpawner)
+                        g.drawString("SELL ^^^ : " + (int)(((double) (user.SSS + 1) / user.maxSSS * user.maxSSSCost) * ((double) (user.SSS + 1) / user.maxSSS)), center(200, "SELL ^^^ : " + (int)(((double) (user.SSS + 1) / user.maxSSS * user.maxSSSCost) * ((double) (user.SSS + 1) / user.maxSSS)), g), 700);
+                    if(selected instanceof WWWSpawner)
+                        g.drawString("SELL ^^^ : " + (int)(((double) (user.WWW + 1) / user.maxWWW * user.maxWWWCost) * ((double) (user.WWW + 1) / user.maxWWW)), center(200, "SELL ^^^ : " + (int)(((double) (user.WWW + 1) / user.maxWWW * user.maxWWWCost) * ((double) (user.WWW + 1) / user.maxWWW)), g), 700);
+                    if(selected instanceof EEESpawner)
+                        g.drawString("SELL ^^^ : " + (int)(((double) (user.EEE + 1) / user.maxEEE * user.maxEEECost) * ((double) (user.EEE + 1) / user.maxEEE)), center(200, "SELL ^^^ : " + (int)(((double) (user.EEE + 1) / user.maxEEE * user.maxEEECost) * ((double) (user.EEE + 1) / user.maxEEE)), g), 700);
+                    g.drawRect(25,675,150,40);
+
+                } else {
+                    g.drawString("BASE",center(200,"BASE",g),530);
+                    g.drawString("> protect.",20,560);
+                    long timealive = (System.nanoTime() - ((BASE)selected).birthdate) / 1000000000;;
+                    g.drawString("[ lifetime ] : " + timealive + "s", 20, 590);
+                    g.drawString("[ forcefield ] : " + User.basefield, 20, 610);
+                    g.drawString("DIRECT",center(200,"DIRECT",g),660);
+                    g.drawRect(50, 635, 100, 40);
+                    if(beacon)
+                    g.drawRect(55,640,90,30);
+
+                }
+                break;
         }
 
+
+
+
+        //////////// PAUSE SCREEN //////////////////////////
         if(!running)
         g.drawString("Paused.",200+center(800,"Paused.",g),400);
 
@@ -497,8 +625,9 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
         g.drawString("lasers: "+lasers.size(),220,80);
         g.drawString("particles: "+fx.size(),220,100);
         g.drawString("mapsize: "+mapsize+"m",220,120);
-
-
+        g.drawString("zoommap: "+(800/scaler)+"m",220,140);
+        g.drawString("zoom: "+scaler+"x",220,160);
+        g.drawString("x:"+userx+" y:"+usery,220,180);
 
 
 
@@ -521,6 +650,14 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
             return true;
         }
         return false;
+    }
+
+    public boolean collisionCircle(int x1, int y1, int r1, int x2, int y2, int r2){
+        double xDif = x1 - x2;
+        double yDif = y1 - y2;
+        double distanceSquared = xDif * xDif + yDif * yDif;
+
+        return (distanceSquared < (r1 + r2) * (r1 + r2));
     }
 
     public boolean collision(int x, int y, int w, int h, int x1, int y1, int w1, int h1){
@@ -564,6 +701,24 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
                     selection = 4;
             }
 
+            if(selection==5&&selected instanceof BASE&&collision(e.getX(),e.getY(),50,635,100,40))
+                beacon=!beacon;
+            if(selection==5&&selected instanceof Spawner&&collision(e.getX(),e.getY(),25,675,150,40)){
+                if(selected instanceof TTTSpawner)
+                user.moolah+=(int)(((double) (user.TTT + 1) / user.maxTTT * user.maxTTTCost) * ((double) (user.TTT + 1) / user.maxTTT));
+                if(selected instanceof SSSSpawner)
+                    user.moolah+=(int)(((double) (user.SSS + 1) / user.maxSSS * user.maxSSSCost) * ((double) (user.SSS + 1) / user.maxSSS));
+                if(selected instanceof WWWSpawner)
+                    user.moolah+=(int)(((double) (user.WWW + 1) / user.maxWWW * user.maxWWWCost) * ((double) (user.WWW + 1) / user.maxWWW));
+                if(selected instanceof EEESpawner)
+                    user.moolah+=(int)(((double) (user.EEE + 1) / user.maxEEE * user.maxEEECost) * ((double) (user.EEE + 1) / user.maxEEE));
+
+                selection=0;
+                int i=objects.indexOf(selected);
+                objects.remove(i);
+            }
+
+
             if(collision(e.getX(),e.getY(),10,560,100,30)){
                 user.strategyTTT=!user.strategyTTT;
             }
@@ -572,20 +727,37 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
                 System.out.println("select target");
             }
 
-        } else if (e.getX()>225){
+
+
+
+        } else if (e.getX()>225) {
+
+            //////////////////////////////////////////////////////////////
+            //                                                          //
+            //                                                          //
+            //              ACTIONS WITHING THE MAP                     //
+            //                                                          //
+            //                                                          //
+            //////////////////////////////////////////////////////////////
+
             //variable that determines whether or not there is another block already beneath the cursor
             boolean cheaterprevention=false;
+            int spawnclicked=-1; // variable to store which spawner the user is clicking on
+
             //checks the position of all the objects in the array and makes sure it's not under the cursor
             for(int x=0;x<objects.size();x++){
-                if(objects.get(x)instanceof Spawner||objects.get(x).kind==3){ //only considers objects that are spawners or asteroids
+                if(objects.get(x)instanceof Spawner|| objects.get(x) instanceof BASE||objects.get(x).kind==3){ //only considers objects that are spawners or asteroids
                     //bad way to check all 4 corners
                     if(collision(worldX-25,worldY-25,objects.get(x).x,objects.get(x).y,objects.get(x).w,objects.get(x).h)||collision(worldX+25,worldY-25,objects.get(x).x,objects.get(x).y,objects.get(x).w,objects.get(x).h)||collision(worldX-25,worldY+25,objects.get(x).x,objects.get(x).y,objects.get(x).w,objects.get(x).h)||collision(worldX+25,worldY+25,objects.get(x).x,objects.get(x).y,objects.get(x).w,objects.get(x).h)){
                         cheaterprevention=true;//says there is an object beneath the cursor
+                        if(objects.get(x) instanceof Spawner||objects.get(x) instanceof BASE)
+                        spawnclicked=x;
                     }
                 }
             }
 
             if(!cheaterprevention){
+
                 switch (selection){
                     case -1:
                         for(int x=0;x<objects.size();x++){
@@ -597,42 +769,52 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
 
                         break;
                     case 1:
-                        //if(user.moolah>=user.TTTCost) {
+                        if(running&&user.moolah>=((double)(user.TTT+1)/user.maxTTT*user.maxTTTCost)&&user.TTT<user.maxTTT||developer) {
                             objects.add(new TTTSpawner(worldX, worldY, 1, objects, lasers));
                             //user.TTT++;
                             user.moolah -= user.TTTCost;
-                            user.TTTCost += 5;
-                        //}
+                            user.TTTCost += (int)((double)(user.TTT+1)/user.maxTTT*user.maxTTTCost);
+                        }
                             selection = 0;
 
                         break;
                     case 2:
-                        //if(user.moolah>=user.SSSCost) {
+                        if(running&&user.moolah>=(int)((double)(user.SSS+1)/user.maxSSS*user.maxSSSCost)||developer) {
                             objects.add(new SSSSpawner(worldX, worldY, 1, objects, lasers));
                             //user.SSS++;
-                            user.moolah -= user.SSSCost;
+                            user.moolah -= (int)((double)(user.SSS+1)/user.maxSSS*user.maxSSSCost);
                             user.SSSCost += 5;
-                        //}
+                        }
                             selection = 0;
 
                         break;
                     case 3:
-                        //if(user.moolah>=user.WWWCost) {
+                        if(running&&user.moolah>=(int)((double)(user.WWW+1)/user.maxWWW*user.maxWWWCost)||developer) {
                             objects.add(new WWWSpawner(worldX, worldY, 1, objects, lasers));
                             //user.WWW++;
-                            user.moolah -= user.WWWCost;
+                            user.moolah -= (int)((double)(user.WWW+1)/user.maxWWW*user.maxWWWCost);
                             user.WWWCost += 5;
-                        //}
+                        }
                         selection=0;
                         break;
                     case 4:
+                        if(running&&user.moolah>=(int)((double)(user.EEE+1)/user.maxEEE*user.maxEEECost)||developer){
                         objects.add(new EEESpawner(worldX, worldY, 1, objects, lasers));
                         //user.WWW++;
-                        user.moolah -= user.EEECost;
+                        user.moolah -=(int)((double)(user.EEE+1)/user.maxEEE*user.maxEEECost);
                         user.EEECost *= 2;
-                        //}
+                        }
                         selection=0;
                         break;
+                    case 5:
+                        selection=0;
+                        break;
+
+                }
+            } else {
+                if((selection==0||selection==5)&&spawnclicked!=-1){
+                    selection=5;
+                    selected=objects.get(spawnclicked);
                 }
             }
         }
@@ -640,10 +822,10 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
     }
 
     public void mousePressed(MouseEvent e) {
-        if(selection==0) {
+        //if(selection==0) {
             startx = e.getX();
             starty = e.getY();
-        }
+        //}
 
     }
 
@@ -651,9 +833,21 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
     }
 
     public void mouseEntered(MouseEvent e) {
+        if(e.getX()>200&&beacon){
+            User.beaconing=true;
+            //the x and y position of the cursor within the world, applies the transformations to the x and y
+            int worldX=(int)(((e.getX()-200-400)/scaler)-offsetx); // tricky but goes backwards from transformations.
+            int worldY=(int)(((e.getY()-400)/scaler)-offsety);
+            User.userx=worldX;
+            User.userY=worldY;
+            userx=worldX;
+            usery=worldY;
+        }
     }
 
+
     public void mouseExited(MouseEvent e) {
+        User.beaconing=false;
     }
 
     @Override
@@ -721,7 +915,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
     @Override
     public void mouseDragged(MouseEvent e) {
         //// **** IMPORTANT NOTE ***** remember that shifting it to the left is negative and right is positive
-        if(selection==0) {
+        //if(selection==0) {
             int sceneW = 800; //width of scene in which the camera is in
             int sceneH = 800; //height of scene in which the camera is in
             double defaultscaler = 1.0/((double)mapsize/(sceneW));
@@ -776,12 +970,25 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
             //resets the offset anchor
             startx = e.getX();
             starty = e.getY();
-        }
+        //}
 
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
+        if(e.getX()>200&&beacon){
+            User.beaconing=true;
+            //the x and y position of the cursor within the world, applies the transformations to the x and y
+            int worldX=(int)(((e.getX()-200-400)/scaler)-offsetx); // tricky but goes backwards from transformations.
+            int worldY=(int)(((e.getY()-400)/scaler)-offsety);
+            User.userx=worldX;
+            User.userY=worldY;
+            userx=worldX;
+            usery=worldY;
+        } else {
+            User.beaconing=false;
+        }
+
 
     }
 }

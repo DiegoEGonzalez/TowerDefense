@@ -2,11 +2,21 @@ import java.util.*;
 import java.awt.*;
 public class Asteroid extends Unit{
     private boolean mined = false;
+    private double angle=0;
 
     public Asteroid(int x, int y, int w, int h, ArrayList<Unit> objects, ArrayList<Laser> lasers){
         super(x,y,w,h,3,500,objects,lasers);
+        angle=Math.random()*Math.toRadians(360);
         alive=true;
     }
+
+    public void move() {
+        angle=Math.random()*Math.toRadians(360);
+        //x+=Math.cos(angle)*.005;
+        //y+=Math.sin(angle)*.005;
+        angle+=Math.random()*Math.toRadians(2)-Math.toRadians(1);
+    }
+
     public void checkLasers(){
         for (Iterator<Laser> iterator = lasers.iterator(); iterator.hasNext(); ) {
             Laser b = iterator.next();

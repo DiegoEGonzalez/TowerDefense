@@ -13,6 +13,7 @@ public class WWWSpawner extends Spawner{
         super(x,y,kind,objects,lasers);
         recharge=15;
         maxcount=3;
+        name = "WWW SPAWNER";
     }
     public void action(){
 
