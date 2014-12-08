@@ -174,10 +174,6 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
     public void update(){
         if(running){
 
-
-
-
-
         if((System.nanoTime()-lastAction)/1000000000.0>5&&start){
             start=false;
             level++;
@@ -186,6 +182,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
             //mapsize = mapsize + mapsize / 4;
             //addMeteor();
 
+            if(!developer)
             scaler =1.0/((double)mapsize/(800));
             offsetx=(int)(-400/scaler);
             offsety=0;
