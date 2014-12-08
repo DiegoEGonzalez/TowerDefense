@@ -69,9 +69,7 @@ public class Laser{
         x+=deltax*15;
         y+=deltay*15;
 
-        if(x>Alpha.mapsize||x<0||y>Alpha.mapsize/2||y<-Alpha.mapsize/2){
-            alive=false;
-        }
+
     }
 
     public double getX() {

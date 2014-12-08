@@ -67,10 +67,12 @@ public abstract class Unit{
         for (Iterator<Laser> iterator = lasers.iterator(); iterator.hasNext(); ) {
             Laser b = iterator.next();
 
-            if((kind==1||kind==2)&&(b.kind==4))
+            if((kind!=3)&&(b.kind==4))
                 continue;
+
             int health2=health;
-            if(collisionCircle(x,y,h/2+h/4,(int)b.getX(),(int)b.getY(),2)&&b.kind!=kind){
+
+            if(collisionCircle(x,y,h/2,(int)b.getX(),(int)b.getY(),2)&&b.kind!=kind){
                 health-=b.getDamage();
 
                 switch (b.kind){
