@@ -52,7 +52,7 @@ super(x,y,30,30,kind,40,1,5,objects,lasers,parent);
     public boolean avoidAsteroid(){
         boolean hit=false;
         for(int b=0;b<objects.size();b++){
-            if(objects.get(b).kind!=3)
+            if(objects.get(b).kind!=0)
                 continue;
 
             boolean obstacle = collisionCircle((int)(x+vx),(int)(y+vy),h/2,(int)(objects.get(b).x),(int)(objects.get(b).y),(int)(objects.get(b).h/2));
@@ -66,7 +66,7 @@ super(x,y,30,30,kind,40,1,5,objects,lasers,parent);
     public void dodgeAsteroid(){
         //tries to avoid an asteroid before hitting it
         for(int b=0;b<objects.size();b++){
-            if(objects.get(b).kind!=3)
+            if(objects.get(b).kind!=0)
                 continue;
             if(!objects.get(b).isInMap())
                 continue;

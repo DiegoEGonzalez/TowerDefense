@@ -70,7 +70,7 @@ public class Minions extends Unit{
             y += Math.round(vy);
         }
 
-        if(kind==1&&User.beaconing&&collisionCircle(x,y,h/2,User.userx,User.userY,150))
+        if(kind==1&&User.beaconing&&collisionCircle(getX(),getY(),h/2,User.userx,User.userY,150))
             directed=true;
         else
         directed=false;
@@ -100,7 +100,7 @@ public class Minions extends Unit{
             if(lasers.get(b).kind==kind)
                 continue;
 
-            boolean obstacle = collisionCircle(x,y,75,(int)(lasers.get(b).x+lasers.get(b).deltax),(int)(lasers.get(b).y+lasers.get(b).deltay),(int)(lasers.get(b).h/2));
+            boolean obstacle = collisionCircle(getX(),getY(),75,(int)(lasers.get(b).x+lasers.get(b).deltax),(int)(lasers.get(b).y+lasers.get(b).deltay),(int)(lasers.get(b).h/2));
 
             if(obstacle&&(!left||!right||!up||!down)&&!isFacing2(b, 90)) {
                 if(obstacle)
@@ -114,7 +114,7 @@ public class Minions extends Unit{
     public boolean avoidAsteroid(){
         boolean hit=false;
         for(int b=0;b<objects.size();b++){
-            if(objects.get(b).kind!=3)
+            if(objects.get(b).kind!=0)
                 continue;
 
             boolean obstacle = collisionCircle((int)(x+vx),(int)(y+vy),h/2,(int)(objects.get(b).x),(int)(objects.get(b).y),(int)(objects.get(b).h/2));
@@ -143,7 +143,7 @@ public class Minions extends Unit{
     public void dodgeAsteroid(){
         //tries to avoid an asteroid before hitting it
         for(int b=0;b<objects.size();b++){
-            if(objects.get(b).kind!=3)
+            if(objects.get(b).kind!=0)
                 continue;
 
             boolean obstacle = collisionCircle((int)(x+vx),(int)(y+vy),h/2+20,(int)(objects.get(b).x),(int)(objects.get(b).y),(int)(objects.get(b).h/2));
@@ -192,7 +192,7 @@ public class Minions extends Unit{
     public boolean clear(){
         //checks to see if it overlaps anything
         for(int b=0;b<objects.size();b++){
-            if(objects.get(b).kind!=3) //if the object is not a meteor, skip
+            if(objects.get(b).kind!=0) //if the object is not a meteor, skip
                 continue;
 
             boolean obstacle = collisionCircle((int)(x+vx),(int)(y+vy),h/2,(int)(objects.get(b).x),(int)(objects.get(b).y),(int)(objects.get(b).h/2));
@@ -260,9 +260,9 @@ public class Minions extends Unit{
                 break;
         }
 
-        if((System.nanoTime()-lastAction)/1000000000.0>recharge&&index>-1) {
+        if((Alpha.gametime-lastAction)/1000000000.0>recharge&&index>-1) {
             shoot(index);
-            lastAction=System.nanoTime();
+            lastAction=Alpha.gametime;
         }
 
 
@@ -271,10 +271,10 @@ public class Minions extends Unit{
     public int findClosest(){
         int index=-1;
         for(int q=0;q<objects.size();q++) {
-            if (objects.get(q) == this||objects.get(q).kind==kind||(objects.get(q).kind==3))
+            if (objects.get(q) == this||objects.get(q).kind==kind||(objects.get(q).kind==0))
                 continue;
             int searchRadius = 400; //radius of whether the object will be findable
-            boolean search = collisionCircle(x,y,searchRadius,objects.get(q).x,objects.get(q).y,20); // whether the object is close enough to be considered
+            boolean search = collisionCircle(getX(),getY(),searchRadius,objects.get(q).getX(),objects.get(q).getY(),20); // whether the object is close enough to be considered
             boolean facing = isFacing(q,45); //whether it's facing the object
             if(search&&facing) {
                 if(index==-1) {
@@ -295,10 +295,10 @@ public class Minions extends Unit{
     public int findFarthest(){
         int index=-1;
         for(int q=0;q<objects.size();q++) {
-            if (objects.get(q) == this||objects.get(q).kind==kind||objects.get(q).kind==3)
+            if (objects.get(q) == this||objects.get(q).kind==kind||objects.get(q).kind==0)
                 continue;
             int searchRadius = 400; //radius of whether the object will be findable
-            boolean search = collisionCircle(x,y,searchRadius,objects.get(q).x,objects.get(q).y,20); // whether the object is close enough to be considered
+            boolean search = collisionCircle(getX(),getY(),searchRadius,objects.get(q).getX(),objects.get(q).getY(),20); // whether the object is close enough to be considered
             boolean facing = isFacing(q,45); //whether it's facing the object
             if(search&&facing) {
                 if(index==-1)
@@ -317,10 +317,10 @@ public class Minions extends Unit{
     public int findWeakest(){
         int index=-1;
         for(int q=0;q<objects.size();q++) {
-            if (objects.get(q) == this||objects.get(q).kind==kind||objects.get(q).kind==3)
+            if (objects.get(q) == this||objects.get(q).kind==kind||objects.get(q).kind==0)
                 continue;
             int searchRadius = 400; //radius of whether the object will be findable
-            boolean search = collisionCircle(x,y,searchRadius,objects.get(q).x,objects.get(q).y,20); // whether the object is close enough to be considered
+            boolean search = collisionCircle(getX(),getY(),searchRadius,objects.get(q).getX(),objects.get(q).getY(),20); // whether the object is close enough to be considered
             boolean facing = isFacing(q,45); //whether it's facing the object
             if(search&&facing) {
                 if(index==-1)
@@ -336,10 +336,10 @@ public class Minions extends Unit{
     public int findThreat(){
         int index=-1;
         for(int q=0;q<objects.size();q++) {
-            if (objects.get(q) == this||objects.get(q).kind==kind||objects.get(q).kind==3)
+            if (objects.get(q) == this||objects.get(q).kind==kind||objects.get(q).kind==0)
                 continue;
             int searchRadius = 400; //radius of whether the object will be findable
-            boolean search = collisionCircle(x,y,searchRadius,objects.get(q).x,objects.get(q).y,20); // whether the object is close enough to be considered
+            boolean search = collisionCircle(getX(),getY(),searchRadius,objects.get(q).getX(),objects.get(q).getY(),20); // whether the object is close enough to be considered
             boolean facing = isFacing(q,45); //whether it's facing the object
             if(search&&facing) {
                 int distance1 = (int)Math.sqrt(Math.pow(objects.get(0).x-objects.get(q).x,2)+Math.pow(objects.get(0).y-objects.get(q).y,2));
@@ -356,10 +356,10 @@ public class Minions extends Unit{
     public int findMOOLAH(){
         int index=-1;
         for(int q=0;q<objects.size();q++) {
-            if ((objects.get(q).kind!=3))
+            if ((objects.get(q).kind!=0))
                 continue;
             int searchRadius = h/2+10; //radius of whether the object will be findable
-            boolean search = collisionCircle(x,y,searchRadius,objects.get(q).x,objects.get(q).y,objects.get(q).h/2); // whether the object is close enough to be considered
+            boolean search = collisionCircle(getX(),getY(),searchRadius,objects.get(q).getX(),objects.get(q).getY(),objects.get(q).h/2); // whether the object is close enough to be considered
             boolean facing = isFacing(q,45); //whether it's facing the object
             if(search&&facing) {
                 if(index==-1) {
@@ -385,13 +385,13 @@ public class Minions extends Unit{
         }
 
         if(index!=-1&&horde) {
-            boolean enemynearby = collisionCircle(x, y, h / 2 + 250, objects.get(index).x, objects.get(index).y, objects.get(index).h / 2);
+            boolean enemynearby = collisionCircle(getX(), getY(), h / 2 + 250, objects.get(index).getX(), objects.get(index).getY(), objects.get(index).h / 2);
             int index2 = tacticAlgorithm(true, protectindex);
             if (index2 == -1)
                 index2 = tactic(true);
             if(index2!=-1&&objects.get(index2).isInMap()&&isInMap()) {
-                boolean friendnearby = collisionCircle(x, y, h / 2 + 250, objects.get(index2).x, objects.get(index2).y, objects.get(index2).h / 2);
-                boolean friendReallyClose = collisionCircle(x, y, h / 2 + 50, objects.get(index2).x, objects.get(index2).y, objects.get(index2).h / 2);
+                boolean friendnearby = collisionCircle(getX(), getY(), h / 2 + 250, objects.get(index2).getX(), objects.get(index2).getY(), objects.get(index2).h / 2);
+                boolean friendReallyClose = collisionCircle(getX(), getY(), h / 2 + 50, objects.get(index2).getX(), objects.get(index2).getY(), objects.get(index2).h / 2);
                 if (!enemynearby && friendnearby&&!friendReallyClose)
                     index = index2;
             }
@@ -400,8 +400,8 @@ public class Minions extends Unit{
             if (index2 == -1)
                 index2 = tactic(true);
             if(index2!=-1&&objects.get(index2).isInMap()&&isInMap()) {
-                boolean friendnearby = collisionCircle(x, y, h / 2 + 250, objects.get(index2).x, objects.get(index2).y, objects.get(index2).h / 2);
-                boolean friendReallyClose = collisionCircle(x, y, h / 2 + 50, objects.get(index2).x, objects.get(index2).y, objects.get(index2).h / 2);
+                boolean friendnearby = collisionCircle(getX(), getY(), h / 2 + 250, objects.get(index2).getX(), objects.get(index2).getY(), objects.get(index2).h / 2);
+                boolean friendReallyClose = collisionCircle(getX(),getY(), h / 2 + 50, objects.get(index2).getX(), objects.get(index2).getY(), objects.get(index2).h / 2);
                 if (friendnearby && !friendReallyClose)
                     index = index2;
             }
@@ -428,7 +428,7 @@ public class Minions extends Unit{
                 continue;
 
 
-            boolean searchable = collisionCircle(x,y,h/2+400,objects.get(q).x,objects.get(q).y,objects.get(q).h/2);
+            boolean searchable = collisionCircle(getX(),getY(),h/2+400,objects.get(q).getX(),objects.get(q).getY(),objects.get(q).h/2);
 
             if(searchable) {
                 int distance1 = (int) Math.sqrt(Math.pow(x - objects.get(q).x, 2) + Math.pow(y - objects.get(q).y, 2));
@@ -506,7 +506,7 @@ public class Minions extends Unit{
                     break;
             }
 
-            boolean searchable = collisionCircle(x,y,h/2+400,objects.get(q).x,objects.get(q).y,objects.get(q).h/2);
+            boolean searchable = collisionCircle(getX(),getY(),h/2+400,objects.get(q).getX(),objects.get(q).getY(),objects.get(q).h/2);
 
             if(searchable) {
                 int distance1 = (int) Math.sqrt(Math.pow(x - objects.get(q).x, 2) + Math.pow(y - objects.get(q).y, 2));

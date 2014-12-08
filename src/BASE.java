@@ -7,7 +7,7 @@ public class BASE extends Unit {
     public BASE(int x, int y, int kind, ArrayList<Unit> objects, ArrayList<Laser> lasers){
         super(x, y, 100,100,kind,5000,objects,lasers);
         alive=true;
-        birthdate=System.nanoTime();
+        birthdate=Alpha.gametime;
     }
 
     public void draw(Graphics2D g){
@@ -16,20 +16,20 @@ public class BASE extends Unit {
             g.setColor(Color.lightGray);
         else {
             g.setColor(new Color(0,255,255,15));
-            g.fillOval(x - User.basefield / 2, y - User.basefield / 2, User.basefield, User.basefield);
+            g.fillOval(getX() - User.basefield / 2, getY() - User.basefield / 2, User.basefield, User.basefield);
             g.setColor(Color.BLUE);
         }
-        g.drawRect(x-50,y-50,100,100);
+        g.drawRect(getX()-50,getY()-50,100,100);
         if(kind==1)
             g.setColor(Color.blue);
         else
             g.setColor(Color.RED);
 
-        g.drawRect(x-35,y-35,70,70);
+        g.drawRect(getX()-35,getY()-35,70,70);
 
-        g.drawRect(x-20,y-20,40,40);
-        g.drawLine(x-w/2,y-h/2,x+50,y+50);
-        g.drawLine(x+50,y-h/2,x-w/2,y+50);
+        g.drawRect(getX()-20,getY()-20,40,40);
+        g.drawLine(getX()-w/2,getY()-h/2,getX()+50,getY()+50);
+        g.drawLine(getX()+50,getY()-h/2,getX()-w/2,getY()+50);
     }
     public void update(){
         super.update();

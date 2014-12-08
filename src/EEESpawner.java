@@ -17,9 +17,9 @@ public class EEESpawner extends Spawner{
     }
     public void action(){
 
-        if((System.nanoTime()-lastAction)/1000000000.0>recharge&&count<maxcount) {
-            objects.add(new EEE(x,y,kind,objects,lasers,this));
-            lastAction=System.nanoTime();
+        if((Alpha.gametime-lastAction)/1000000000.0>recharge&&count<maxcount) {
+            objects.add(new EEE(getX(),getY(),kind,objects,lasers,this));
+            lastAction=Alpha.gametime;
             count++;
         }
 

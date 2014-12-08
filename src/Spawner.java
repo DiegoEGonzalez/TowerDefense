@@ -21,9 +21,9 @@ public class Spawner extends Unit{
     public Spawner(int x, int y, int kind, ArrayList<Unit> objects, ArrayList<Laser> lasers){
         super(x,y,size,size,kind,150,objects,lasers);
         recharge=5;
-        lastAction=System.nanoTime();
+        lastAction=Alpha.gametime;
         alive=true;
-        birthdate=System.nanoTime();
+        birthdate=Alpha.gametime;
     }
     public void move(){
             angle+=Math.toRadians(3);
@@ -43,15 +43,15 @@ public class Spawner extends Unit{
             else
                 g.setColor(new Color(200, 200, 200, 15));
 
-                g.fillOval(x - forcefield / 2, y - forcefield / 2, forcefield, forcefield);
+                g.fillOval(getX() - forcefield / 2, getY() - forcefield / 2, forcefield, forcefield);
 
             g.setColor(Color.BLUE);
         }
-        g.drawRect(x - size / 2, y - size / 2, size, size);
+        g.drawRect(getX() - size / 2, getY() - size / 2, size, size);
 
         g.setColor(Color.white);
         if(count>0)
-        g.drawString(count+"",x-size/2+center(size,count+"",g),y+5);
+        g.drawString(count+"",getX()-size/2+center(size,count+"",g),getY()+5);
         g.setColor(Color.blue);
 
 

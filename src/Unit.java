@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 public abstract class Unit{
     double power=0;
-    int x,y=0;
+    double x,y=0;
     int h,w;
     double vx,vy=0;
     int maxhealth,health;
@@ -58,8 +58,8 @@ public abstract class Unit{
 
     public void draw(Graphics2D g){
         g.setColor(Color.WHITE);
-        g.drawRect(x-w/2,y+h/2+10,w,5);
-        g.fillRect(x-w/2,y+h/2+10,(int)(((double)w/maxhealth)*health),5);
+        g.drawRect(getX()-w/2,getY()+h/2+10,w,5);
+        g.fillRect(getX()-w/2,getY()+h/2+10,(int)(((double)w/maxhealth)*health),5);
 
     }
 
@@ -67,12 +67,12 @@ public abstract class Unit{
         for (Iterator<Laser> iterator = lasers.iterator(); iterator.hasNext(); ) {
             Laser b = iterator.next();
 
-            if((kind!=3)&&(b.kind==4))
+            if((kind!=0)&&(b.kind==4))
                 continue;
 
             int health2=health;
 
-            if(collisionCircle(x,y,h/2,(int)b.getX(),(int)b.getY(),2)&&b.kind!=kind){
+            if(collisionCircle(getX(),getY(),h/2,(int)b.getX(),(int)b.getY(),2)&&b.kind!=kind){
                 health-=b.getDamage();
 
                 switch (b.kind){
@@ -132,4 +132,12 @@ public abstract class Unit{
         }else
             return (a<b);
     }
+
+    public int getX(){
+        return (int)Math.round(x);
+    }
+    public int getY(){
+        return (int)Math.round(y);
+    }
+
 }

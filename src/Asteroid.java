@@ -5,15 +5,16 @@ public class Asteroid extends Unit{
     private double angle=0;
 
     public Asteroid(int x, int y, int w, int h, ArrayList<Unit> objects, ArrayList<Laser> lasers){
-        super(x,y,w,h,3,500,objects,lasers);
+        super(x,y,w,h,0,500,objects,lasers);
         angle=Math.random()*Math.toRadians(360);
         alive=true;
     }
 
     public void move() {
-        angle=Math.random()*Math.toRadians(360);
-        //x+=Math.cos(angle)*.005;
-        //y+=Math.sin(angle)*.005;
+        //angle=Math.random()*Math.toRadians(360);
+        double speed = .3;
+        x+=Math.cos(angle)*speed;
+        y+=Math.sin(angle)*speed;
         angle+=Math.random()*Math.toRadians(2)-Math.toRadians(1);
     }
 
@@ -21,7 +22,7 @@ public class Asteroid extends Unit{
         for (Iterator<Laser> iterator = lasers.iterator(); iterator.hasNext(); ) {
             Laser b = iterator.next();
 
-            if(collisionCircle(x,y,h/2+h/4,(int)b.getX(),(int)b.getY(),2)&&b.kind!=kind){
+            if(collisionCircle(getX(),getY(),h/2+h/4,(int)b.getX(),(int)b.getY(),2)&&b.kind!=kind){
                 health-=b.getDamage();
 
                 for(int y=0;y<3;y++){
@@ -43,9 +44,9 @@ public class Asteroid extends Unit{
     }
     public void draw(Graphics2D g){
         g.setColor(new Color(51,25,0));
-        g.fillOval(x-(w/2),y-(h/2),w,h);
+        g.fillOval(getX()-(w/2),getY()-(h/2),w,h);
         g.setColor(new Color(153,76,0));
-        g.drawOval(x-(w/2),y-(h/2),w,h);
+        g.drawOval(getX()-(w/2),getY()-(h/2),w,h);
     }
     public boolean isMined(){return mined;}
 }

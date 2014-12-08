@@ -11,14 +11,14 @@ public class NN extends Unit {
     }
     public void draw(Graphics g){
         g.setColor(Color.lightGray);
-        g.drawRect(x-10,y-10,20,20);
+        g.drawRect(getX()-10,getY()-10,20,20);
         g.setColor(Color.CYAN);
         for(int q=0;q<objects.size();q++) {
             if (objects.get(q) == this)
                 continue;
                     if((objects.get(q)instanceof NN)) {
-                        if(collisionCircle(x,y,150,objects.get(q).x,objects.get(q).y,10)) {
-                            g.drawLine(x,y,objects.get(q).x,objects.get(q).y);
+                        if(collisionCircle(getX(),getY(),150,objects.get(q).getX(),objects.get(q).getY(),10)) {
+                            g.drawLine(getX(),getY(),objects.get(q).getX(),objects.get(q).getY());
                         }
                     }
 

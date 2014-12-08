@@ -23,7 +23,7 @@ public class Particles {
         this.x=x;
         this.y=y;
         this.size=size;
-        life=System.nanoTime();
+        life=Alpha.gametime;
         this.lifetime=lifetime;
         this.angle=angle;
         this.speed=speed;
@@ -43,7 +43,7 @@ public class Particles {
     public void update(){
         x+=Math.cos(angle)*speed;
         y+=Math.sin(angle)*speed;
-        if((System.nanoTime()-life)/1000000000.0>lifetime) {
+        if((Alpha.gametime-life)/1000000000.0>lifetime) {
             alive=false;
         }
     }
