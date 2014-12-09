@@ -44,6 +44,8 @@ public abstract class Unit{
                     }
                 }
             }
+        } else if (health>maxhealth){
+            health=maxhealth;
         }
 
     }
@@ -69,6 +71,9 @@ public abstract class Unit{
 
             if((kind!=0)&&(b.kind==4))
                 continue;
+            if(!b.isAlive()){
+                continue;
+            }
 
             int health2=health;
 

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class Alpha extends JPanel implements MouseListener,MouseWheelListener, MouseMotionListener{
-    static int mapsize=1500;
+    static int mapsize=5000;
     static int maxMapsize=5000;
 
     ArrayList<Unit> objects = new ArrayList<Unit>();
@@ -33,7 +33,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
     long startGame=0; //value to store when game started
     static long gametime=0; //time game has been runnning
 
-    boolean beacon=false;
+    static boolean beacon=false;
 
 
     static Unit selected;
@@ -81,10 +81,10 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
                 spawnx=(int)(Math.random()*(mapsize+mapsize/4));
                 spawny=(int)(Math.random()*(mapsize+mapsize/2))-mapsize/4-mapsize/2;
             } while(collisionCircle(spawnx,spawny,sizerandom/2,50,0,User.basefield/2));
-            objects.add(new Asteroid(spawnx,spawny,sizerandom,sizerandom,objects,lasers));
+            objects.add(new Asteroid(spawnx, spawny, sizerandom, sizerandom, objects, lasers));
         }
 
-        for(int x=0;x<1000;x++){ //1000 stars
+        for(int x=0;x<10000;x++){ //1000 stars
             //randomly spawns stars
             starX.add((int)(Math.random()*mapsize*4)-mapsize);
             starY.add((int)(Math.random()*mapsize*4)-mapsize*2);
@@ -161,6 +161,19 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
                 "num4");
         getActionMap().put("num4",
                 num4);
+
+        Action num5 = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+
+                beacon=!beacon;
+
+            }
+        };
+        getInputMap().put(KeyStroke.getKeyStroke("5"),
+                "num5");
+        getActionMap().put("num5",
+                num5);
+
         Action num0 = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
 
@@ -187,7 +200,6 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
     }
 
     public void update(){
-
 
         if(running){
             gametime=System.nanoTime()-startGame;
@@ -351,8 +363,6 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
         a.translate(-(offsetx),-(offsety));
         a.scale(2,2);
 
-
-
         a.translate((offsetx),(offsety)); // applies offset
 
         if(developer) {
@@ -375,7 +385,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
         }
 
         ///beacon
-        if(User.beaconing&&running) {
+        if(beacon&&User.beaconing&&running) {
             a.setColor(new Color(255, 255, 0, 15));
             a.fillOval(User.userx-150, User.userY-150, 300, 300);
 
@@ -725,7 +735,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
     }
 
     public void mouseEntered(MouseEvent e) {
-        if(e.getX()>200&&beacon){
+        if(e.getX()>200){
             User.beaconing=true;
             //the x and y position of the cursor within the world, applies the transformations to the x and y
             int worldX=(int)(((e.getX()-200-400)/scaler)-offsetx); // tricky but goes backwards from transformations.

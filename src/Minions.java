@@ -70,7 +70,7 @@ public class Minions extends Unit{
             y += Math.round(vy);
         }
 
-        if(kind==1&&User.beaconing&&collisionCircle(getX(),getY(),h/2,User.userx,User.userY,150))
+        if(kind==1&&Alpha.beacon&&User.beaconing&&collisionCircle(getX(),getY(),h/2,User.userx,User.userY,150))
             directed=true;
         else
         directed=false;
