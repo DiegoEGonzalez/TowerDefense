@@ -242,23 +242,7 @@ public class Minions extends Unit{
     public void action() {
         int index = -1;
 
-        switch (priority){
-            case 1:
-                index=findClosest();
-                break;
-            case 2:
-                index=findFarthest();
-                break;
-            case 3:
-                index=findWeakest();
-                break;
-            case 4:
-                index=findThreat();
-                break;
-            case 5:
-                index=findMOOLAH();
-                break;
-        }
+        index=tactic(false);
 
         if((Alpha.gametime-lastAction)/1000000000.0>recharge&&index>-1) {
             shoot(index);
@@ -419,7 +403,7 @@ public class Minions extends Unit{
             if(!objects.get(q).isInMap()&&isInMap())
                 continue;
 
-            if(objects.get(q) instanceof Asteroid)
+            if(objects.get(q) instanceof Asteroid&&!(this instanceof EEE))
                 continue;
 
             if(objects.get(q).kind==kind&&!defense)
@@ -454,7 +438,7 @@ public class Minions extends Unit{
             if(!objects.get(q).isInMap()&&isInMap())
                 continue;
 
-            if(objects.get(q) instanceof Asteroid)
+            if(objects.get(q) instanceof Asteroid&&!(this instanceof EEE))
                 continue;
 
             if(objects.get(q).kind==kind&&!defense)
@@ -521,7 +505,7 @@ public class Minions extends Unit{
 
 
     public void shoot(int index){
-        lasers.add(new Laser(x, y, objects.get(index).x, objects.get(index).y, kind,damage,shotpower, bulletLife));
+        lasers.add(new Laser(x, y, objects.get(index).getX(), objects.get(index).getY(), kind,damage,shotpower, bulletLife));
     }
 
     public boolean isFacing(int index, double degree){

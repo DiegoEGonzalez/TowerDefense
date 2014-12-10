@@ -468,9 +468,6 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
     }
 
     public void drawUI(Graphics g){
-        //letterbox
-
-
 
         g.setColor(Color.BLACK);
         g.fillRect(0,0,200,Shell.DEFAULT_WINDOWSIZEY);
