@@ -1,15 +1,25 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
+import java.awt.image.ImageObserver;
+import java.awt.image.RenderedImage;
+import java.awt.image.renderable.RenderableImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 
 public class Alpha extends JPanel implements MouseListener,MouseWheelListener, MouseMotionListener{
-    static int mapsize=5000;
+    static int mapsize=1500;
     static int maxMapsize=5000;
 
     ArrayList<Unit> objects = new ArrayList<Unit>();
@@ -53,6 +63,17 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
 
     int userx=0;
     int usery=0;
+
+    GraphicsEnvironment ge=GraphicsEnvironment.getLocalGraphicsEnvironment();
+    GraphicsDevice comp2 = ge.getDefaultScreenDevice();
+
+
+    Point comp=ge.getCenterPoint();
+    int fullx=0;
+    int fully=0;
+    double wfull=0;
+    double hfull=0;
+    double fullscreenscale=1;
 
 
     public Alpha() {
@@ -344,16 +365,55 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
         }
     }
 
+    public void fullscreen(){
+        wfull=comp2.getDisplayMode().getWidth()/1000.0;
+        hfull=comp2.getDisplayMode().getHeight()/800.0;
+        fullscreenscale=Math.min(wfull,hfull);
+        fullx=(int)Math.round(comp2.getDisplayMode().getWidth()/2-500*fullscreenscale);
+        fully=(int)Math.round(comp2.getDisplayMode().getHeight()/2-400*fullscreenscale);
+
+
+    }
+
     public void paintComponent(Graphics g){
         super.paintComponent(g);
-        Graphics2D a = (Graphics2D)g;
 
+        RenderingHints rh = new RenderingHints(
+                RenderingHints.KEY_RENDERING,
+                RenderingHints.VALUE_RENDER_SPEED);
+
+        Graphics2D a = (Graphics2D)g.create();
+        a.setRenderingHints(rh);
+
+        Graphics2D b = (Graphics2D)a.create();
+        b.setRenderingHints(rh);
+
+        Graphics2D c = (Graphics2D)a.create();
+        c.setRenderingHints(rh);
+
+        a.translate(fullx,fully);
+        a.scale(fullscreenscale,fullscreenscale);
+        b.translate(fullx, fully);
+        b.scale(fullscreenscale, fullscreenscale);
+
+        drawStars(c);
+        drawGame(a);
+
+        drawUI(b);
+        if (developer)
+            drawDev(b);
+
+        g.setColor(Color.black);
+        g.fillRect(0,0,fullx,comp2.getDisplayMode().getHeight());
+        g.fillRect(fullx+(int)(1000*fullscreenscale),0,comp2.getDisplayMode().getWidth(),comp2.getDisplayMode().getHeight());
+
+
+    }
+
+    public void drawStars(Graphics2D a){
         a.translate(200,0); //shifts game 200 pixels to make room for UI
-        a.translate(400,400); //shifts anchor point to the center in orderfor accurate transformation 
+        a.translate(400,400); //shifts anchor point to the center in orderfor accurate transformation
         a.scale(scaler,scaler); //applies zoom(scaler)
-
-
-
         a.scale(.5,.5);
         a.translate((offsetx),(offsety));
         a.setColor(Color.DARK_GRAY);
@@ -362,15 +422,20 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
         }
         a.translate(-(offsetx),-(offsety));
         a.scale(2,2);
+    }
 
+    public void drawGame(Graphics2D a) {
+        a.translate(200,0); //shifts game 200 pixels to make room for UI
+        a.translate(400,400); //shifts anchor point to the center in orderfor accurate transformation
+        a.scale(scaler,scaler); //applies zoom(scaler)
         a.translate((offsetx),(offsety)); // applies offset
 
-        if(developer) {
-            g.setColor(Color.GRAY);
-            g.drawRect(0, -mapsize / 2, mapsize, mapsize); //draws map
-            g.drawRect(0, -mapsize / 2 - mapsize / 4, mapsize + mapsize / 4, mapsize + mapsize / 2); // draws meteor spawn area
-            g.drawRect(0, -mapsize / 2 - mapsize / 4 - mapsize / 8, mapsize + mapsize / 4 + mapsize / 8, mapsize + mapsize / 2 + mapsize / 4); // draws spawn area
-            g.setColor(Color.WHITE);
+        if (developer) {
+            a.setColor(Color.GRAY);
+            a.drawRect(0, -mapsize / 2, mapsize, mapsize); //draws map
+            a.drawRect(0, -mapsize / 2 - mapsize / 4, mapsize + mapsize / 4, mapsize + mapsize / 2); // draws meteor spawn area
+            a.drawRect(0, -mapsize / 2 - mapsize / 4 - mapsize / 8, mapsize + mapsize / 4 + mapsize / 8, mapsize + mapsize / 2 + mapsize / 4); // draws spawn area
+            a.setColor(Color.WHITE);
         }
 
 
@@ -378,10 +443,10 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
             objects.get(x).draw(a);
         }
         for(int x=0;x<lasers.size();x++){
-            lasers.get(x).draw(g);
+            lasers.get(x).draw(a);
         }
         for(int x=0;x<fx.size();x++){
-            fx.get(x).draw(g);
+            fx.get(x).draw(a);
         }
 
         ///beacon
@@ -391,20 +456,22 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
 
         }
 
+        if(selection!=0&&selection!=5){
+            Spawner.drawdefaut(user.userx,user.userY,a);
+        }
+
         //undoes the transformation
-        a.translate(-(offsetx),-(offsety));
-        a.scale(1.0/scaler,1.0/scaler);
-        a.translate(-400,-400);
-        a.translate(-200,0);
-
-        drawUI(g);
-        if (developer)
-            drawDev(g);
-
-
+        //a.translate(-(offsetx),-(offsety));
+        //a.scale(1.0/scaler,1.0/scaler);
+        //a.translate(-400,-400);
+        //a.translate(-200, 0);
     }
 
     public void drawUI(Graphics g){
+        //letterbox
+
+
+
         g.setColor(Color.BLACK);
         g.fillRect(0,0,200,Shell.DEFAULT_WINDOWSIZEY);
         g.setColor(Color.WHITE);
@@ -593,32 +660,36 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
     public void mouseClicked(MouseEvent e) {
 
         //the x and y position of the cursor within the world, applies the transformations to the x and y
-        int worldX=(int)(((e.getX()-200-400)/scaler)-offsetx); // tricky but goes backwards from transformations.
-        int worldY=(int)(((e.getY()-400)/scaler)-offsety);
+        int worldX=(int)((((e.getX()-fullx)/fullscreenscale-200-400)/scaler)-offsetx); // tricky but goes backwards from transformations.
+        int worldY=(int)((((e.getY()-fully)/fullscreenscale-400)/scaler)-offsety);
 
-        if(e.getX()<200) {
-            if (collision(e.getX(), e.getY(), 0, 175, 200, 50)&&selection==1)
+        int windowx=(int)Math.round((e.getX()-fullx)/fullscreenscale);
+        int windowy=(int)Math.round((e.getY()-fully)/fullscreenscale);
+        int windowside=(int)Math.round((200 - fullx) / fullscreenscale);
+
+        if(windowx<200) {
+            if (collision(windowx, windowy, 0, 175, 200, 50)&&selection==1)
                 selection = 0;
-            else if (collision(e.getX(), e.getY(), 0, 225, 200, 50)&&selection==2)
+            else if (collision(windowx, windowy, 0, 225, 200, 50)&&selection==2)
                 selection = 0;
-            else if (collision(e.getX(), e.getY(), 0, 275, 200, 50)&&selection==3)
+            else if (collision(windowx, windowy, 0, 275, 200, 50)&&selection==3)
                 selection = 0;
 
-            if (collision(e.getX(), e.getY(), 0, 175, 200, 50)){
+            if (collision(windowx, windowy, 0, 175, 200, 50)){
                 selection = 1;
-            }else if (collision(e.getX(), e.getY(), 0, 225, 200, 50)&&((!user.unlockedSSS&&user.moolah>100)||user.unlockedSSS)){
+            }else if (collision(windowx, windowy, 0, 225, 200, 50)&&((!user.unlockedSSS&&user.moolah>100)||user.unlockedSSS)){
                 if(!user.unlockedSSS){
                     user.unlockedSSS=true;
                     user.moolah-=100;
                 }else
                     selection = 2;
-            }else if (collision(e.getX(), e.getY(), 0, 275, 200, 50)&&((!user.unlockedWWW&&user.moolah>200)||user.unlockedWWW)){
+            }else if (collision(windowx, windowy, 0, 275, 200, 50)&&((!user.unlockedWWW&&user.moolah>200)||user.unlockedWWW)){
                 if(!user.unlockedWWW){
                     user.unlockedWWW=true;
                     user.moolah-=200;
                 }else
                     selection = 3;
-            }else if (collision(e.getX(), e.getY(), 0, 325, 200, 50)&&((!user.unlockedEEE&&user.moolah>500)||user.unlockedEEE)){
+            }else if (collision(windowx, windowy, 0, 325, 200, 50)&&((!user.unlockedEEE&&user.moolah>500)||user.unlockedEEE)){
                 if(!user.unlockedEEE){
                     user.unlockedEEE=true;
                     user.moolah-=500;
@@ -626,9 +697,9 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
                     selection = 4;
             }
 
-            if(selection==5&&selected instanceof BASE&&collision(e.getX(),e.getY(),50,635,100,40))
+            if(selection==5&&selected instanceof BASE&&collision(windowx,windowy,50,635,100,40))
                 beacon=!beacon;
-            if(selection==5&&selected instanceof Spawner&&collision(e.getX(),e.getY(),25,675,150,40)){
+            if(selection==5&&selected instanceof Spawner&&collision(windowx,windowy,25,675,150,40)){
                 if(selected instanceof TTTSpawner)
                 user.moolah+=(int)(((double) (user.TTT + 1) / user.maxTTT * user.maxTTTCost) * ((double) (user.TTT + 1) / user.maxTTT));
                 if(selected instanceof SSSSpawner)
@@ -648,7 +719,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
 
 
 
-        } else if (e.getX()>225) {
+        } else if (windowx>225) {
 
             //////////////////////////////////////////////////////////////
             //                                                          //
@@ -725,6 +796,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
 
     public void mousePressed(MouseEvent e) {
         //if(selection==0) {
+
             startx = e.getX();
             starty = e.getY();
         //}
@@ -735,15 +807,16 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
     }
 
     public void mouseEntered(MouseEvent e) {
+        int worldX=(int)((((e.getX()-fullx)/fullscreenscale-200-400)/scaler)-offsetx); // tricky but goes backwards from transformations.
+        int worldY=(int)((((e.getY()-fully)/fullscreenscale-400)/scaler)-offsety);
+        User.userx=worldX;
+        User.userY=worldY;
+        userx=worldX;
+        usery=worldY;
         if(e.getX()>200){
             User.beaconing=true;
             //the x and y position of the cursor within the world, applies the transformations to the x and y
-            int worldX=(int)(((e.getX()-200-400)/scaler)-offsetx); // tricky but goes backwards from transformations.
-            int worldY=(int)(((e.getY()-400)/scaler)-offsety);
-            User.userx=worldX;
-            User.userY=worldY;
-            userx=worldX;
-            usery=worldY;
+
         }
     }
 
@@ -761,7 +834,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
         double defaultscaler = 1.0/((double)mapsize/(800));
         double zoom = -(amount/100.0); // amount that will be zoomed
         boolean zoomOut = scaler+zoom>((allowDebug)?0:defaultscaler); // makes sure zoom will not be negative and flip the screen
-        boolean zoomIn = scaler+zoom<2; //makes sure that the zoom won't be too much 2x zoom
+        boolean zoomIn = scaler+zoom<1.4; //makes sure that the zoom won't be too much 2x zoom
 
         if(zoomOut&&zoomIn)
             scaler -= amount / 100.0; // applies zoom
@@ -878,15 +951,15 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
 
     @Override
     public void mouseMoved(MouseEvent e) {
+        int worldX=(int)((((e.getX()-fullx)/fullscreenscale-200-400)/scaler)-offsetx); // tricky but goes backwards from transformations.
+        int worldY=(int)((((e.getY()-fully)/fullscreenscale-400)/scaler)-offsety);
+        User.userx=worldX;
+        User.userY=worldY;
+        userx=worldX;
+        usery=worldY;
         if(e.getX()>200&&beacon){
             User.beaconing=true;
             //the x and y position of the cursor within the world, applies the transformations to the x and y
-            int worldX=(int)(((e.getX()-200-400)/scaler)-offsetx); // tricky but goes backwards from transformations.
-            int worldY=(int)(((e.getY()-400)/scaler)-offsety);
-            User.userx=worldX;
-            User.userY=worldY;
-            userx=worldX;
-            usery=worldY;
         } else {
             User.beaconing=false;
         }

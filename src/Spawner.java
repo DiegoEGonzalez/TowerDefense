@@ -66,6 +66,17 @@ public class Spawner extends Unit{
 
 
     }
+    public static void drawdefaut(int x, int y, Graphics2D g){
+        g.setColor(new Color(255,255,255,50));
+        g.drawRect(x - size / 2, y - size / 2, size, size);
+        g.translate(x, y);     //i haven't added anything, check bugs
+        g.rotate(-Math.toRadians(45));
+        g.drawRect(-15,-15,30,30);
+        g.rotate(Math.toRadians(45));
+        g.translate(-x,-y);
+
+
+    }
     public int center(int x, String a, Graphics g){
         Graphics2D text = (Graphics2D)g;
         FontMetrics fm=g.getFontMetrics();

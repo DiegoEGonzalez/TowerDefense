@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -14,15 +15,12 @@ public class Main implements ActionListener{
         game = new Alpha();//Creates the Game
         window.add(game);//adds the Game to the JFrame
         //*********** JFRAME SPECIFICS **************
+        GraphicsEnvironment ge=GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice comp = ge.getDefaultScreenDevice();
+        comp.setFullScreenWindow(window);
+        game.fullscreen();
         window.setVisible(true); //makes the JFrame visible
         Main confusing = new Main();
-        //while (true) {
-        //game.repaint();//repaint the Game
-        //j
-        //});
-
-
-        // }
     }
 
     public Main(){
