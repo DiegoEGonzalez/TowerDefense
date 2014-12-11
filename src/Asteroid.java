@@ -1,3 +1,5 @@
+import com.sun.xml.internal.rngom.parse.host.Base;
+
 import java.util.*;
 import java.awt.*;
 public class Asteroid extends Unit{
@@ -13,8 +15,23 @@ public class Asteroid extends Unit{
     public void move() {
         //angle=Math.random()*Math.toRadians(360);
         double speed = .3;
-        x+=Math.cos(angle)*speed;
-        y+=Math.sin(angle)*speed;
+        boolean canmove=true;
+        for (int q=0;q<objects.size();q++){
+            if(!(objects.get(q) instanceof BASE))
+                continue;
+
+            BASE a =(BASE)objects.get(q);
+
+            if(collisionCircle(getX(),getY(),h/2,a.getX(),a.getY(),User.basefield/2)) {
+            canmove=false;
+            }
+        }
+        if(canmove) {
+            x += Math.cos(angle) * speed*10;
+            y += Math.sin(angle) * speed*10;
+        } else {
+
+        }
         angle+=Math.random()*Math.toRadians(2)-Math.toRadians(1);
     }
 
