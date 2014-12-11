@@ -989,4 +989,5 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
     public long getTime(){
         return gametime;
     }
+
 }

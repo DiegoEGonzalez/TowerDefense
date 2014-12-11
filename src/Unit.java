@@ -145,4 +145,11 @@ public abstract class Unit{
         return (int)Math.round(y);
     }
 
+    public double addAngles(double a){
+        a+=Math.toRadians(180);
+        if(a>=Math.toRadians(360))
+            a-=Math.toRadians(360);
+        return a;
+    }
+
 }
