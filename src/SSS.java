@@ -6,7 +6,7 @@ public class SSS extends Minions {
     public SSS(int x, int y, int kind, ArrayList<Unit> objects, ArrayList<Laser> lasers,Unit parent){
         super(x,y,30,30,kind,40,8,2,objects,lasers,parent);
         recharge=.3;
-        lastAction=System.nanoTime();
+        lastAction=Alpha.gametime;
         this.kind=kind;
         alive=true;
         priority=4;

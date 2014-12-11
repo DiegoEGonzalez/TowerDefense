@@ -7,7 +7,7 @@ public class Minions extends Unit{
     boolean left,right,down,up;
     int target=0;
     int hate =3;
-    int damage;
+    int damage=5;
     boolean offensive=false;
     double bulletLife=100;
     boolean smart=false;
@@ -240,11 +240,9 @@ public class Minions extends Unit{
     }
 
     public void action() {
-        int index = -1;
+        int index=tactic(false);
 
-        index=tactic(false);
-
-        if((Alpha.gametime-lastAction)/1000000000.0>recharge&&index>-1) {
+        if((Alpha.gametime-lastAction)/1000000000.0>recharge&&index!=-1) {
             shoot(index);
             lastAction=Alpha.gametime;
         }
@@ -412,7 +410,7 @@ public class Minions extends Unit{
                 continue;
 
 
-            boolean searchable = collisionCircle(getX(),getY(),h/2+400,objects.get(q).getX(),objects.get(q).getY(),objects.get(q).h/2);
+            boolean searchable = collisionCircle(getX(), getY(), h / 2 + 400, objects.get(q).getX(), objects.get(q).getY(), objects.get(q).h / 2);
 
             if(searchable) {
                 int distance1 = (int) Math.sqrt(Math.pow(x - objects.get(q).x, 2) + Math.pow(y - objects.get(q).y, 2));

@@ -33,7 +33,7 @@ public class TTT extends Minions {
     public TTT(int x, int y, int kind, ArrayList<Unit> objects, ArrayList<Laser> lasers,Unit parent){
         super(x,y,30,30,kind,10,4,5,objects,lasers,parent);
         recharge=1;
-        lastAction=System.nanoTime();
+        lastAction=Alpha.gametime;
         alive=true;
         priority=1;
         hate=3;

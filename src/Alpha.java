@@ -34,7 +34,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
     int currentx=0;
     int currenty=0;
     static int selection =0;
-    long lastAction=gametime;
+
     int level=1;
     boolean start=false;
 
@@ -42,6 +42,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
     long startPause=0; //value to store when pause was pressed
     long startGame=0; //value to store when game started
     static long gametime=0; //time game has been runnning
+    long lastAction=gametime;
 
     static boolean beacon=false;
 
@@ -397,16 +398,6 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
         }
     }
 
-    public void fullscreen(){
-        wfull=comp2.getDisplayMode().getWidth()/1000.0;
-        hfull=comp2.getDisplayMode().getHeight()/800.0;
-        fullscreenscale=Math.min(wfull,hfull);
-        fullx=(int)Math.round(comp2.getDisplayMode().getWidth()/2-500*fullscreenscale);
-        fully=(int)Math.round(comp2.getDisplayMode().getHeight()/2-400*fullscreenscale);
-
-
-    }
-
     public void paintComponent(Graphics g){
         super.paintComponent(g);
 
@@ -758,7 +749,6 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
             //                                                          //
             //////////////////////////////////////////////////////////////
 
-//hitler is our friend
             //variable that determines whether or not there is another block already beneath the cursor
             boolean cheaterprevention=false;
             int spawnclicked=-1; // variable to store which spawner the user is clicking on
