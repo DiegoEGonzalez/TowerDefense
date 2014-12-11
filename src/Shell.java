@@ -12,7 +12,7 @@ public class Shell extends JFrame {
         //setResizable(false); //prevents user from resizing window
         setLocationRelativeTo(null);//centers the JFRAME to the middle of the screen
 
-        setUndecorated(true);
+        //setUndecorated(true);
 
 
     }

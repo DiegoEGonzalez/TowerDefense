@@ -64,13 +64,15 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
     int userx=0;
     int usery=0;
 
+    boolean fullscreen=false;
+
     GraphicsEnvironment ge=GraphicsEnvironment.getLocalGraphicsEnvironment();
     GraphicsDevice comp2 = ge.getDefaultScreenDevice();
 
 
     Point comp=ge.getCenterPoint();
-    int fullx=0;
-    int fully=0;
+    int fullx=1;
+    int fully=1;
     double wfull=0;
     double hfull=0;
     double fullscreenscale=1;
@@ -218,6 +220,36 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
                 "D");
         getActionMap().put("D",
                 d);
+
+        Action f = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+
+                fullscreen=!fullscreen;
+                if(!fullscreen){
+
+                    Main.comp.setFullScreenWindow(null);
+                    wfull=1;
+                    hfull=1;
+                    fullscreenscale=Math.min(wfull,hfull);
+                    fullx=0;
+                    fully=0;
+                  //  Main.window.setUndecorated(false);
+                }else{
+                    //Main.window.setUndecorated(true);
+                    Main.comp.setFullScreenWindow(Main.window);
+                    wfull=comp2.getDisplayMode().getWidth()/1000.0;
+                    hfull=comp2.getDisplayMode().getHeight()/800.0;
+                    fullscreenscale=Math.min(wfull,hfull);
+                    fullx=(int)Math.round(comp2.getDisplayMode().getWidth()/2-500*fullscreenscale);
+                    fully=(int)Math.round(comp2.getDisplayMode().getHeight()/2-400*fullscreenscale);
+                }
+
+            }
+        };
+        getInputMap().put(KeyStroke.getKeyStroke("F"),
+                "F");
+        getActionMap().put("F",
+                f);
     }
 
     public void update(){

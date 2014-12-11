@@ -9,16 +9,17 @@ public class Main implements ActionListener{
     static Alpha game;
     static Timer timer;
     static boolean ready=false;
+    static GraphicsEnvironment ge=GraphicsEnvironment.getLocalGraphicsEnvironment();
+    static GraphicsDevice comp = ge.getDefaultScreenDevice();
 
     public static void main(String[] args) {
         window = new Shell();//Creates a JFrame using GameEngine
         game = new Alpha();//Creates the Game
         window.add(game);//adds the Game to the JFrame
         //*********** JFRAME SPECIFICS **************
-        GraphicsEnvironment ge=GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice comp = ge.getDefaultScreenDevice();
-        comp.setFullScreenWindow(window);
-        game.fullscreen();
+
+        //comp.setFullScreenWindow(window);
+        //game.fullscreen();
         window.setVisible(true); //makes the JFrame visible
         Main confusing = new Main();
     }
