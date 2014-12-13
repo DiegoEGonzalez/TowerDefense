@@ -1,0 +1,34 @@
+public void getSpeed(){
+	double theta1, theta2; // given, angle with horizontal
+	double m1, m2; //given
+	double speed1, speed2; //given
+	double phi;  //this guy is the angle of the tangent line drawn between the two objects at the point of collision.
+	
+	double vx1, vy1, vx2, vy2;
+	//x
+	vx1 = xComp(speed1, theta1, phi, magicPhysicsStuff(speed1, speed2, theta1, theta2, m1, m2, phi));  	//magical wikipedia physics
+	vy1 = yComp(speed1, theta1, phi, magicPhysicsStuff(speed1, speed2, theta1, theta2, m1, m2, phi));	//that may or may not
+	//y																									//actually work
+	vx2 = xComp(speed2, theta2, phi, magicPhysicsStuff(speed2, speed1, theta2, theta1, m2, m1, phi));	
+	vy2 = yComp(speed2, theta2, phi, magicPhysicsStuff(speed2, speed1, theta2, theta1, m2, m1, phi));
+
+	double speedFinal1 = Math.sqrt((vx1 * vx1) + (vy1 * vy1)); 	// final speed of each object
+	double speedFinal2 = Math.sqrt((vx2 * vx2) + (vy2 * vy2));
+
+	double thetaFinal1 = Math.arctan(vy1 / vx1);				//final angle of each object
+	double thetaFinal2 = Math.arctan(vy2 / vx2);
+	
+}
+
+double magicPhysicsStuff(double speed1, double speed2, double theta1, double theta2, double m1, double m2, double phi){
+	return speed1 * Math.cos(theta1 - phi)(m1 - m2) + 2 * m2 * speed2 * Math.cos(theta2 - phi) / (m1 + m2);
+}
+
+
+double xComp(double speed, double theta, double phi, double preValue){
+	return  preValue * Math.sin(phi) + speed1 * Math.sin(theta - phi) * Math.sin(phi + Math.PI / 2);
+}
+
+double yComp(double speed, double theta, double phi, double preValue){
+	return preValue * Math.sin(phi) + speed1 * Math.sin(theta - phi) * Math.sin(phi + Math.PI / 2);
+}
