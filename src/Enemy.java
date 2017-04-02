@@ -16,19 +16,19 @@ public class Enemy{
 
     public void increase(){
         level++;
-
-        if(level>6){
+        if(level>15){
             WWW=true;
-        } else if(level>3){
+        } else if(level>5){
             SSS=true;
         }
-        spawning=true;
+       /* spawning=true;
         enemies=100;
+        */
     }
 
     public void spawn(){
-        for(int x=0;x<enemies;x++) {
-            if (Math.random() < .0005) {
+        for(int x=0;x<level*7;x++) {
+            //if (Math.random() < .0005) {
                 int spawnxvariation = (int) (Math.random() * Alpha.mapsize / 8);
                 int spawnx = Alpha.mapsize + Alpha.mapsize / 4 + spawnxvariation;
                 int spawny = (int) (Math.random() * Alpha.mapsize) - Alpha.mapsize / 2;
@@ -50,11 +50,12 @@ public class Enemy{
                         objects.add(new WWW(spawnx, spawny, 2, objects, lasers,null));
                     enemies--;
                 }
-            }
+           // }
         }
-
+/*
         if(enemies==0){
             spawning=false;
         }
+        */
     }
 }

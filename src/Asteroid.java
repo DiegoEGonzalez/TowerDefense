@@ -15,8 +15,8 @@ public class Asteroid extends Unit{
 
     public void move() {
         //angle=Math.random()*Math.toRadians(360);
-        double speed = .3;
-        boolean canmove=false;
+        double speed = .03;
+        boolean canmove=true;
         double vx = Math.cos(angle) * speed*10;
         double vy = Math.sin(angle) * speed*10;
         for (int q=0;q<objects.size();q++){
@@ -36,6 +36,9 @@ public class Asteroid extends Unit{
             angle=addAngles(angle);
         }
         setAngle(angle+Math.random()*Math.toRadians(2)-Math.toRadians(1));
+
+        if(!isInBounds())
+            alive = false;
     }
 
     public void checkLasers(){
@@ -63,7 +66,10 @@ public class Asteroid extends Unit{
         }
     }
     public void draw(Graphics2D g){
-        g.setColor(new Color(51,25,0));
+        //if(isInBounds())
+          //  g.setColor(Color.green);
+        //else
+            g.setColor(new Color(51,25,0));
         g.fillOval(getX()-(w/2),getY()-(h/2),w,h);
         g.setColor(new Color(153,76,0));
         g.drawOval(getX()-(w/2),getY()-(h/2),w,h);
@@ -76,6 +82,40 @@ public class Asteroid extends Unit{
             this.angle = Math.toRadians(360) + this.angle;
 
         this.angle = this.angle % Math.toRadians(360);
+
+    }
+
+    public boolean isInBounds(){
+
+        double mapx1 = 0;
+        double mapx2 = Alpha.mapsize + Alpha.mapsize /4;
+
+        double mapy1 = -Alpha.mapsize/2 - Alpha.mapsize/4;
+        double mapy2 = (Alpha.mapsize + Alpha.mapsize/2)/2;
+
+        double asteroidx1 = x - w/2;
+        double asteroidx2 = x + w/2;
+        double asteroidy1 = y - w/2;
+        double asteroidy2 = y + w/2;
+
+        boolean collision = false;
+        //check left wall
+        if((asteroidx2<mapx2 && asteroidx2>mapx1)&&(asteroidy2<mapy2 && asteroidy1>mapy1))
+            collision = true;
+
+/**
+        if(x<0)
+            return false;
+        if(x>(Alpha.mapsize + Alpha.mapsize / 4 + Alpha.mapsize / 8))
+            return false;
+        if(y<(-Alpha.mapsize / 2 - Alpha.mapsize / 4 - Alpha.mapsize / 8))
+            return false;
+        if(y>(Alpha.mapsize + Alpha.mapsize / 2 + Alpha.mapsize / 4)/2)
+            return false;
+ **/
+
+        return collision;
+
 
     }
 }

@@ -43,6 +43,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
     long startGame=0; //value to store when game started
     static long gametime=0; //time game has been runnning
     long lastAction=gametime;
+    long nano = 1000000000;
 
     static boolean beacon=false;
 
@@ -77,6 +78,20 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
     double wfull=0;
     double hfull=0;
     double fullscreenscale=1;
+
+
+
+    static boolean gameover=false;
+
+    /// enemy wave spawn variables
+    long waveStart;
+    long waveFinished;
+    long waveTimeMin = 3*nano;
+    long waveTimeBuffer = 2*nano;
+    boolean enemiesLeft = false;
+    boolean waveAnnounced = false;
+    long waveTimeAnnounce=0;
+    long waveTimeAnnounceDuration = 2*nano;
 
 
     public Alpha() {
@@ -116,6 +131,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
 
         startGame=System.nanoTime();
         startPause=System.nanoTime();
+
 
     }
 
@@ -258,15 +274,37 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
         if(running){
             gametime=System.nanoTime()-startGame;
 
-        if((gametime-lastAction)/1000000000.0>5&&start){
-            start=false;
+
+            //check if enemies killed
+
+
+            //announce new wave
+
+            //begin wave
+
+        if(((gametime-waveStart)>waveTimeMin) && !enemiesLeft && !gameover){
             level++;
             enem.increase();
+            enem.spawn();
+            enemiesLeft = true;
+            waveStart = gametime;
+
+            waveAnnounced = true;
+            waveTimeAnnounce = gametime;
         }
 
+        if((gametime-waveTimeAnnounce)>waveTimeAnnounceDuration){
+            waveAnnounced=false;
+        }
+
+        if(Math.random()<.9 && !gameover)
+                addMeteor();
+
+        /**
         if(enem.spawning){
             enem.spawn();
         }
+         **/
 
         for(int x=0;x<objects.size();x++){
             objects.get(x).update();
@@ -316,7 +354,8 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
 
                 if(b instanceof TTT){
                     if(b.kind!=1)
-                    user.moolah+=2;
+                        user.moolah += 2;
+
                 } else if(b instanceof SSS){
 
                     user.moolah+=10;
@@ -332,6 +371,9 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
                 iterator.remove();
 
             }
+
+            if ( b.kind == 2)
+                enemy++;
 
             if( b instanceof TTTSpawner)
                 ttt++;
@@ -366,9 +408,9 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
 
         }
 
-        if(enemy==0&&!start){
-            start=true;
-            lastAction=gametime;
+        if(enemy==0){
+            enemiesLeft = false;
+            waveFinished = gametime;
         }
 
         } else {
@@ -388,15 +430,16 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
                     sizerandom = (int) (Math.random() * 100) + 20;
                     spawnx = (int) (Math.random() * (mapsize + mapsize / 4));
                     spawny = (int) (Math.random() * (mapsize + mapsize / 2)) - mapsize / 4 - mapsize / 2;
-                    inSpawnzone = collision(spawnx - sizerandom / 2, spawny - sizerandom / 2, sizerandom, sizerandom, 0, -mapsize / 2, mapsize, mapsize);
+                    inSpawnzone = collision(spawnx - sizerandom / 2, spawny - sizerandom / 2, sizerandom, sizerandom, 0, -mapsize / 2, mapsize+mapsize/4, mapsize);
 
                 } while (inSpawnzone);
 
                 objects.add(new Asteroid(spawnx, spawny, sizerandom, sizerandom, objects, lasers));
-                ;
+
             }
         }
     }
+
 
     public void paintComponent(Graphics g){
         super.paintComponent(g);
@@ -502,6 +545,9 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
 
         g.drawString("^^^ : "+user.moolah,10,130);
         g.drawString("wave : " +(level-1),10,150);
+
+        if(waveAnnounced)
+        g.drawString("WAVE "+(level-1),575,70);
 
         g.setColor(Color.WHITE);
         g.drawRect(0, 175, 200, 50);
@@ -641,7 +687,7 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
         g.drawString("zoommap: "+(800/scaler)+"m",220,140);
         g.drawString("zoom: "+scaler+"x",220,160);
         g.drawString("x:"+userx+" y:"+usery,220,180);
-        g.drawString("Time: "+(gametime/1000000)+"s",220,200);
+        g.drawString("Time: "+(gametime/nano)+"s",220,200);
 
     }
 
@@ -989,5 +1035,6 @@ public class Alpha extends JPanel implements MouseListener,MouseWheelListener, M
     public long getTime(){
         return gametime;
     }
+
 
 }

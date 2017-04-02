@@ -39,6 +39,7 @@ public class BASE extends Unit {
                     objects.get(x).alive=false;
                 }
             }
+            Alpha.gameover = true;
         }
     }
 
